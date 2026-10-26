@@ -59,4 +59,6 @@ ok(!/autorizad[oa] (pel|pelo|pela)|n[úu]mero de autoriza/i.test(reg), 'regulame
 
 ok(/até 5 \(cinco\) dias/.test(reg) && /sem ônus/.test(reg) && /nome, imagem e voz/.test(reg), 'regulamento: prazo de 5 dias para a escolha e autorizacao de imagem sem onus');
 
+ok(/mais 5 \(cinco\) dias/.test(reg) && /perde o direito ao prêmio/.test(reg), 'regulamento: mais 5 dias de contato e perda do direito');
+
 console.log('PASS: honest text verified (' + checks + ' checks).');
