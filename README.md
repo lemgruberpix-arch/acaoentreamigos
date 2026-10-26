@@ -5,7 +5,7 @@ Cartela pública para escolha de números, pagamento via Pix, envio de comprovan
 ## Endereços
 
 - Repositório: <https://github.com/lemgruberpix-arch/acaoentreamigos>
-- Site público: <https://lemgruberpix-arch.github.io/acaoentreamigos/>
+- Site público: <https://acaoentreamigos.pages.dev/>
 - Painel administrativo: arquivo local `admin.html`, deliberadamente ignorado pelo Git e publicado separadamente somente após proteção do backend.
 
 ## Rodar localmente

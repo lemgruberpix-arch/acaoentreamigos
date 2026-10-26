@@ -5,7 +5,7 @@ const assert = require('assert');
 
 const ROOT = path.join(__dirname, '..');
 const files = ['cartaz.html', 'canvas-instagram.html'];
-const expectedUrl = 'https://lemgruberpix-arch.github.io/acaoentreamigos/';
+const expectedUrl = 'https://acaoentreamigos.pages.dev/';
 let checks = 0;
 function ok(value, message) { assert(value, message); checks += 1; }
 
@@ -13,7 +13,7 @@ for (const name of files) {
   const html = fs.readFileSync(path.join(ROOT, name), 'utf8');
   ok(!html.includes('acecarmorj.github.io'), name + ': URL antiga removida');
   ok(html.includes(expectedUrl), name + ': URL publica nova presente');
-  ok((html.match(/https:\/\/lemgruberpix-arch\.github\.io\/acaoentreamigos\//g) || []).length === 1,
+  ok((html.match(/https:\/\/acaoentreamigos\.pages\.dev\//g) || []).length === 1,
     name + ': URL publica definida uma unica vez');
   ok(/assets\/qrcode-rifa\.png/.test(html), name + ': usa QR local');
   ok(!/api\.qrserver\.com/.test(html), name + ': sem dependencia remota de QR em tempo de uso');
