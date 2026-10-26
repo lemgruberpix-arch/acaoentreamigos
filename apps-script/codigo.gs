@@ -1,0 +1,785 @@
+/******************************************************
+ * Rifa Honda XRE 190 2018 — Ação entre Amigos
+ * Google Apps Script Backend (Google Sheets + Drive).
+ * Escala: 10.000 cotas (0000 a 9999), R$ 20,00 por cota.
+ *
+ * Características principais:
+ * - 10.000 cotas: NUMERO_INICIAL = 0, QUANTIDADE_NUMEROS = 10000 (0000 a 9999).
+ * - VALOR_POR_NUMERO = 20 (R$ 20,00).
+ * - Suporte a armazenamento esparso (números não registrados são 'livre' por padrão).
+ * - Inicialização em lotes (batch chunks de 1.000 linhas) para evitar timeout.
+ * - Concorrência segura via LockService (waitLock até 30s).
+ * - Privacidade pública: action 'listar' remove nomes e telefones (PII sanitizado).
+ ******************************************************/
+
+const SHEET_NAME = 'Numeros';
+const NUMERO_INICIAL = 0;
+const QUANTIDADE_NUMEROS = 10000;
+const START_NUMERO = NUMERO_INICIAL;
+const TOTAL_NUMEROS = QUANTIDADE_NUMEROS;
+const MAX_NUMERO = START_NUMERO + TOTAL_NUMEROS - 1; // 9999
+const PANEL_SIZE = 100;
+const VALOR_POR_NUMERO = 20;
+const DEFAULT_VALOR_NUMERO = VALOR_POR_NUMERO;
+const COMPROVANTES_FOLDER_NAME = 'Comprovantes - Rifa Honda XRE 190';
+const BATCH_SIZE = 1000;
+
+// Pacotes promocionais canônicos (quantidade, valor em centavos). Devem espelhar PROMOCOES_COTAS em assets/config.js.
+const PACOTES_CENTAVOS = [[10, 17000], [6, 10000], [3, 5000]];
+const MAX_COTAS_POR_RESERVA = 200;
+const MAX_COMPROVANTE_BYTES = 5 * 1024 * 1024;
+const MIMES_COMPROVANTE = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+// Padrão SEGURO (falha fechada): as ações administrativas exigem a senha. Só troque para false em planilha de TESTE sem dados
+// reais: com false, qualquer pessoa com o endereço do Apps Script consegue ler nomes/WhatsApp e marcar cota como paga/livre.
+const ADMIN_EXIGE_SENHA = true;
+// Com ADMIN_EXIGE_SENHA = true, as ações administrativas exigem a propriedade de script ADMIN_TOKEN (Configurações do projeto > Propriedades do script).
+// A confirmação automática só liga se a propriedade AUTO_CONFIRMAR for 'true'; o navegador nunca decide isso.
+
+const COLS = [
+  'numero',
+  'status',
+  'nome',
+  'whatsapp',
+  'valor',
+  'data_reserva',
+  'data_pagamento',
+  'observacao',
+  'comprovante_nome',
+  'comprovante_url',
+  'data_comprovante',
+  'comprovante_tipo'
+];
+
+const COL = COLS.reduce(function (acc, name, index) {
+  acc[name] = index;
+  return acc;
+}, {});
+
+function inicializarPlanilha() {
+  return inicializarPlanilha_(false);
+}
+
+function inicializarPlanilhaCompleta() {
+  return inicializarPlanilha_(true);
+}
+
+function doGet(e) {
+  return handleRequest_(e);
+}
+
+function doPost(e) {
+  return handleRequest_(e);
+}
+
+function handleRequest_(e) {
+  try {
+    const payload = parsePayload_(e);
+    // Definido no servidor (sobrescreve qualquer valor do cliente): ações admin só via POST, nunca na URL.
+    payload.__viaPost = Boolean(e && e.postData && e.postData.contents);
+    const action = String(payload.action || 'listar').trim();
+
+    if (action === 'listar') {
+      return json_({
+        ok: true,
+        total_numeros: TOTAL_NUMEROS,
+        numero_inicial: START_NUMERO,
+        valor_numero: VALOR_POR_NUMERO,
+        numeros: listarNumeros_(payload)
+      });
+    }
+
+    if (action === 'reservar') {
+      return json_(reservarNumeros_(payload));
+    }
+
+    if (action === 'enviarComprovante') {
+      return json_(enviarComprovante_(payload));
+    }
+
+    if (action === 'listarAdmin') {
+      requireAdmin_(payload);
+      return json_({
+        ok: true,
+        total_numeros: TOTAL_NUMEROS,
+        numero_inicial: START_NUMERO,
+        valor_numero: VALOR_POR_NUMERO,
+        reservas: listarReservasAdmin_()
+      });
+    }
+
+    if (action === 'confirmarPagamento') {
+      requireAdmin_(payload);
+      payload.status = 'pago';
+      return json_(atualizarStatus_(payload));
+    }
+
+    if (action === 'liberarNumero') {
+      requireAdmin_(payload);
+      payload.status = 'livre';
+      return json_(atualizarStatus_(payload));
+    }
+
+    if (action === 'atualizarStatus') {
+      requireAdmin_(payload);
+      return json_(atualizarStatus_(payload));
+    }
+
+    if (action === 'inicializar') {
+      requireAdmin_(payload);
+      const prefillAll = payload.prefillAll === true || payload.prefillAll === 'true';
+      const msg = inicializarPlanilha_(prefillAll);
+      return json_({ ok: true, message: msg });
+    }
+
+    return json_({ ok: false, error: 'Ação inválida: ' + action });
+  } catch (err) {
+    return json_({ ok: false, error: err.message || String(err) });
+  }
+}
+
+// Senha fácil de adivinhar exige freio: depois de ADMIN_MAX_FALHAS erros seguidos, o admin trava por ADMIN_BLOQUEIO_SEG
+// (vale para todo mundo, inclusive o dono; acerto reinicia a contagem). O contador guarda só o número de erros, nunca a senha tentada.
+const ADMIN_MAX_FALHAS = 8;
+const ADMIN_BLOQUEIO_SEG = 600;
+const ADMIN_CHAVE_FALHAS = 'admin_falhas';
+
+/** Compara sem parar no primeiro caractere diferente (não vaza quantas letras acertaram). */
+function sameText_(a, b) {
+  const x = String(a);
+  const y = String(b);
+  let diff = x.length === y.length ? 0 : 1;
+  const n = Math.max(x.length, y.length);
+  for (let i = 0; i < n; i++) diff |= (x.charCodeAt(i) || 0) ^ (y.charCodeAt(i) || 0);
+  return diff === 0;
+}
+
+/** Falha fechada: sem ADMIN_TOKEN configurado ou com token errado, nenhuma ação administrativa roda. */
+function requireAdmin_(payload) {
+  if (!payload.__viaPost) throw new Error('Ações administrativas só por POST.');
+  if (!ADMIN_EXIGE_SENHA) return;
+  const cache = CacheService.getScriptCache();
+  const falhas = Number(cache.get(ADMIN_CHAVE_FALHAS) || 0);
+  if (falhas >= ADMIN_MAX_FALHAS) {
+    throw new Error('Muitas tentativas erradas. Aguarde ' + Math.round(ADMIN_BLOQUEIO_SEG / 60) + ' minutos e tente de novo.');
+  }
+  const token = PropertiesService.getScriptProperties().getProperty('ADMIN_TOKEN');
+  if (!token || !sameText_(payload.token || payload.adminToken || '', token)) {
+    cache.put(ADMIN_CHAVE_FALHAS, String(falhas + 1), ADMIN_BLOQUEIO_SEG);
+    throw new Error('Não autorizado.');
+  }
+  if (falhas) cache.remove(ADMIN_CHAVE_FALHAS);
+}
+
+/** Texto livre vindo do público: corta tamanho, remove controles e neutraliza fórmulas de planilha (=, +, -, @). */
+function cleanText_(value, maxLen) {
+  let text = String(value === undefined || value === null ? '' : value)
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLen);
+  if (/^[=+\-@]/.test(text)) text = "'" + text;
+  return text;
+}
+
+/** Número BR canônico para comparação exata: só dígitos, sem o prefixo de país 55 (DDD + número = 10 ou 11 dígitos). */
+function canonicalPhone_(value) {
+  let digits = String(value || '').replace(/\D/g, '');
+  if ((digits.length === 12 || digits.length === 13) && digits.indexOf('55') === 0) digits = digits.slice(2);
+  return digits;
+}
+
+/** Confere os primeiros bytes do arquivo (não confia no MIME enviado pelo navegador). */
+function assinaturaComprovanteValida_(base64, mime) {
+  let bytes;
+  try {
+    bytes = Utilities.base64Decode(base64);
+  } catch (err) {
+    return false;
+  }
+  if (!bytes || bytes.length < 12 || bytes.length > MAX_COMPROVANTE_BYTES) return false;
+  const b = Array.prototype.slice.call(bytes, 0, 12).map(function (v) { return v & 0xff; });
+  const ascii = function (from, to) { return String.fromCharCode.apply(null, b.slice(from, to)); };
+  if (mime === 'image/jpeg') return b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff;
+  if (mime === 'image/png') return b[0] === 0x89 && ascii(1, 4) === 'PNG';
+  if (mime === 'image/webp') return ascii(0, 4) === 'RIFF' && ascii(8, 12) === 'WEBP';
+  if (mime === 'application/pdf') return ascii(0, 4) === '%PDF';
+  return false;
+}
+
+function normalizeWhatsapp_(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (digits.length < 10 || digits.length > 13) {
+    throw new Error('WhatsApp inválido. Informe DDD + número.');
+  }
+  return digits;
+}
+
+function parsePayload_(e) {
+  let payload = {};
+
+  if (e && e.parameter) {
+    Object.keys(e.parameter).forEach(function (key) {
+      payload[key] = e.parameter[key];
+    });
+  }
+
+  if (e && e.postData && e.postData.contents) {
+    const raw = e.postData.contents;
+    try {
+      const parsed = JSON.parse(raw);
+      payload = Object.assign(payload, parsed);
+    } catch (ignore) {}
+  }
+
+  return payload;
+}
+
+function getSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+  ensureHeader_(sheet);
+  return sheet;
+}
+
+function ensureHeader_(sheet) {
+  const lastCol = Math.max(sheet.getLastColumn(), 1);
+  let header = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function (v) {
+    return String(v || '').trim();
+  });
+
+  const hasAnyHeader = header.some(function (v) { return v; });
+  if (!hasAnyHeader) {
+    sheet.getRange(1, 1, 1, COLS.length).setValues([COLS]);
+    sheet.setFrozenRows(1);
+    formatSheet_(sheet);
+    return;
+  }
+
+  const missing = COLS.filter(function (col) {
+    return header.indexOf(col) === -1;
+  });
+
+  if (missing.length) {
+    sheet.getRange(1, header.length + 1, 1, missing.length).setValues([missing]);
+  }
+
+  sheet.setFrozenRows(1);
+  formatSheet_(sheet);
+}
+
+function formatSheet_(sheet) {
+  sheet.getRange(1, 1, 1, COLS.length).setFontWeight('bold').setBackground('#e7f4ff');
+  try { sheet.autoResizeColumns(1, COLS.length); } catch (ignore) {}
+}
+
+function isValidNumero_(n) {
+  return typeof n === 'number' && !isNaN(n) && isFinite(n) && Math.floor(n) === n && n >= START_NUMERO && n <= MAX_NUMERO;
+}
+
+function formatCode_(n) {
+  return String(n).padStart(4, '0');
+}
+
+/**
+ * Inicialização com suporte a lote (batch chunking) e modo esparso.
+ * Em modo padrão (prefillAll=false), apenas prepara o cabeçalho.
+ * Em modo completo (prefillAll=true), preenche em lotes de 1.000 para não estourar o limite de tempo do Google.
+ */
+function inicializarPlanilha_(prefillAll) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+
+  try {
+    const sheet = getSheet_();
+    if (!prefillAll) {
+      return 'Planilha preparada em modo esparso (0000 a 9999). Números sem reserva são livres por padrão.';
+    }
+
+    const lastRow = sheet.getLastRow();
+    const rows = lastRow > 1
+      ? sheet.getRange(2, 1, lastRow - 1, COLS.length).getValues()
+      : [];
+
+    const existentes = {};
+    rows.forEach(function (row) {
+      const rawNum = row[COL.numero];
+      if (rawNum !== '' && rawNum !== null && rawNum !== undefined) {
+        const numero = Number(rawNum);
+        if (isValidNumero_(numero)) existentes[numero] = true;
+      }
+    });
+
+    const toAppend = [];
+    for (let i = START_NUMERO; i <= MAX_NUMERO; i++) {
+      if (!existentes[i]) {
+        toAppend.push([i, 'livre', '', '', '', '', '', '', '', '', '', '']);
+      }
+    }
+
+    // Gravação em lotes (chunks) para evitar timeout
+    for (let offset = 0; offset < toAppend.length; offset += BATCH_SIZE) {
+      const chunk = toAppend.slice(offset, offset + BATCH_SIZE);
+      const startRow = sheet.getLastRow() + 1;
+      sheet.getRange(startRow, 1, chunk.length, COLS.length).setValues(chunk);
+      SpreadsheetApp.flush();
+    }
+
+    formatSheet_(sheet);
+    return 'Planilha pré-preenchida com sucesso com 10.000 cotas (0000 a 9999).';
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * Listagem sanitizada para consulta pública.
+ * Remove rigorosamente dados pessoais (nome, whatsapp, comprovante_url).
+ * Retorna apenas { numero, status }.
+ */
+function listarNumeros_(payload) {
+  const sheet = getSheet_();
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return [];
+
+  const opts = payload || {};
+  const hasPanel = opts.panel !== undefined && opts.panel !== null && String(opts.panel).trim() !== '';
+  const panelIndex = hasPanel ? Math.max(0, Math.min(99, Number(opts.panel) || 0)) : null;
+  const panelFirst = panelIndex !== null ? START_NUMERO + panelIndex * PANEL_SIZE : START_NUMERO;
+  const panelLast = panelIndex !== null ? Math.min(MAX_NUMERO, panelFirst + PANEL_SIZE - 1) : MAX_NUMERO;
+  const includeAllFree = opts.includeFree === true || opts.includeFree === 'true';
+
+  const values = sheet.getRange(2, 1, lastRow - 1, COLS.length).getValues();
+  const out = [];
+
+  for (let i = 0; i < values.length; i++) {
+    const rawNum = values[i][COL.numero];
+    if (rawNum === '' || rawNum === null || rawNum === undefined) continue;
+    const numero = Number(rawNum);
+    if (!isValidNumero_(numero)) continue;
+    if (panelIndex !== null && (numero < panelFirst || numero > panelLast)) continue;
+
+    const status = String(values[i][COL.status] || 'livre').toLowerCase().trim();
+    if (!includeAllFree && status === 'livre') continue;
+
+    // PRIVACIDADE PÚBLICA: apenas numero e status são expostos
+    out.push({
+      numero: numero,
+      status: status
+    });
+  }
+
+  return out.sort(function (a, b) {
+    return Number(a.numero) - Number(b.numero);
+  });
+}
+
+/**
+ * Listagem completa para o painel do responsável (nome, WhatsApp, valor, datas, comprovante).
+ * Só roda via requireAdmin_ (POST). Cotas livres não entram: o painel deduz as livres pelo total.
+ */
+function listarReservasAdmin_() {
+  return getRowsWithIndex_(getSheet_())
+    .map(function (item) { return item.data; })
+    .filter(function (data) { return isValidNumero_(data.numero) && data.status !== 'livre'; })
+    .sort(function (a, b) { return a.numero - b.numero; });
+}
+
+function rowToObject_(row) {
+  return {
+    numero: Number(row[COL.numero]),
+    status: String(row[COL.status] || 'livre').toLowerCase().trim(),
+    nome: row[COL.nome] || '',
+    whatsapp: row[COL.whatsapp] || '',
+    valor: Number(row[COL.valor] || 0),
+    data_reserva: dateToIso_(row[COL.data_reserva]),
+    data_pagamento: dateToIso_(row[COL.data_pagamento]),
+    observacao: row[COL.observacao] || '',
+    comprovante_nome: row[COL.comprovante_nome] || '',
+    comprovante_url: row[COL.comprovante_url] || '',
+    data_comprovante: dateToIso_(row[COL.data_comprovante]),
+    comprovante_tipo: row[COL.comprovante_tipo] || ''
+  };
+}
+
+function dateToIso_(value) {
+  if (!value) return '';
+  if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value.getTime())) {
+    return value.toISOString();
+  }
+  return String(value);
+}
+
+function getRowsWithIndex_(sheet) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return [];
+
+  const values = sheet.getRange(2, 1, lastRow - 1, COLS.length).getValues();
+  const rows = [];
+  for (let index = 0; index < values.length; index++) {
+    const rawNum = values[index][COL.numero];
+    if (rawNum === '' || rawNum === null || rawNum === undefined) continue;
+    const norm = normalizeRow_(values[index]);
+    rows.push({
+      rowIndex: index + 2,
+      values: norm,
+      data: rowToObject_(norm)
+    });
+  }
+  return rows;
+}
+
+function normalizeRow_(row) {
+  const out = row.slice(0, COLS.length);
+  while (out.length < COLS.length) out.push('');
+  return out;
+}
+
+/**
+ * Reserva de cotas com LockService para garantir integridade e atomicidade sob concorrência.
+ */
+function reservarNumeros_(payload) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+
+  try {
+    const sheet = getSheet_();
+    const rows = getRowsWithIndex_(sheet);
+    const byNumber = {};
+    rows.forEach(function (item) {
+      if (isValidNumero_(item.data.numero)) {
+        byNumber[Number(item.data.numero)] = item;
+      }
+    });
+
+    const numeros = parseNumeros_(payload.numeros);
+    if (!numeros.length) throw new Error('Nenhum número válido informado (0000 a 9999).');
+    if (numeros.length > MAX_COTAS_POR_RESERVA) {
+      throw new Error('Máximo de ' + MAX_COTAS_POR_RESERVA + ' cotas por reserva.');
+    }
+
+    const nome = cleanText_(payload.nome, 80);
+    const observacao = cleanText_(payload.observacao, 200);
+    if (nome.length < 2) throw new Error('Nome obrigatório.');
+    const whatsapp = normalizeWhatsapp_(payload.whatsapp);
+    const preco = calcularPrecoPromocional_(numeros.length);
+    validarTotalInformado_(payload.valorTotal, preco.total);
+    const valoresPorNumero = distribuirTotalPorCotas_(preco.total, numeros.length);
+
+    numeros.forEach(function (numero, index) {
+      const item = byNumber[numero];
+      if (item && item.data.status !== 'livre') {
+        throw new Error('A cota ' + formatCode_(numero) + ' acabou de ser reservada por outra pessoa.');
+      }
+    });
+
+    const now = new Date();
+    const rowsToAppend = [];
+
+    numeros.forEach(function (numero, index) {
+      const item = byNumber[numero];
+      const newRow = [
+        numero,
+        'reservado',
+        nome,
+        whatsapp,
+        valoresPorNumero[index],
+        now,
+        '',
+        observacao,
+        '',
+        '',
+        '',
+        ''
+      ];
+      if (item) {
+        sheet.getRange(item.rowIndex, 1, 1, COLS.length).setValues([newRow]);
+      } else {
+        rowsToAppend.push(newRow);
+      }
+    });
+
+    if (rowsToAppend.length) {
+      sheet.getRange(sheet.getLastRow() + 1, 1, rowsToAppend.length, COLS.length).setValues(rowsToAppend);
+    }
+
+    return {
+      ok: true,
+      numeros: numeros,
+      valor_base: preco.base,
+      desconto: preco.desconto,
+      valor_total: preco.total,
+      message: 'Reserva realizada com sucesso!'
+    };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Regras canônicas de pacotes (PACOTES_CENTAVOS): 10 por 170, 6 por 100, 3 por 50; sobra vale R$20. */
+function calcularPrecoPromocional_(quantidade) {
+  const qtd = Number(quantidade);
+  if (!Number.isInteger(qtd) || qtd < 1) throw new Error('Quantidade de cotas inválida.');
+
+  let restante = qtd;
+  let totalCentavos = 0;
+  PACOTES_CENTAVOS.forEach(function (pacote) {
+    const grupos = Math.floor(restante / pacote[0]);
+    totalCentavos += grupos * pacote[1];
+    restante -= grupos * pacote[0];
+  });
+  totalCentavos += restante * VALOR_POR_NUMERO * 100;
+
+  const base = qtd * VALOR_POR_NUMERO;
+  const total = totalCentavos / 100;
+  return { base: base, desconto: base - total, total: total };
+}
+
+function validarTotalInformado_(informado, esperado) {
+  if (informado === undefined || informado === null || informado === '') return;
+  const valor = Number(informado);
+  if (!Number.isFinite(valor) || Math.round(valor * 100) !== Math.round(esperado * 100)) {
+    throw new Error('O valor da reserva não corresponde às promoções vigentes. Atualize a seleção e tente novamente.');
+  }
+}
+
+function distribuirTotalPorCotas_(total, quantidade) {
+  const totalCentavos = Math.round(total * 100);
+  const baseCentavos = Math.floor(totalCentavos / quantidade);
+  const extras = totalCentavos % quantidade;
+  const valores = [];
+  for (let index = 0; index < quantidade; index += 1) {
+    valores.push((baseCentavos + (index < extras ? 1 : 0)) / 100);
+  }
+  return valores;
+}
+
+/**
+ * Envio de comprovante anexado via Drive com concorrência segura.
+ */
+function enviarComprovante_(payload) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+
+  try {
+    const sheet = getSheet_();
+    const rows = getRowsWithIndex_(sheet);
+    const byNumber = {};
+    rows.forEach(function (item) {
+      if (isValidNumero_(item.data.numero)) {
+        byNumber[Number(item.data.numero)] = item;
+      }
+    });
+
+    const numeros = parseNumeros_(payload.numeros);
+    if (!numeros.length) throw new Error('Nenhum número informado para vincular ao comprovante.');
+
+    if (numeros.length > MAX_COTAS_POR_RESERVA) {
+      throw new Error('Máximo de ' + MAX_COTAS_POR_RESERVA + ' cotas por comprovante.');
+    }
+
+    const arquivoBase64 = String(payload.arquivoBase64 || '').replace(/\s+/g, '');
+    const arquivoNome = sanitizeFileName_(payload.arquivoNome || 'comprovante.jpg');
+    const arquivoMime = String(payload.arquivoMime || '').trim().toLowerCase();
+    // Quem decide a confirmação automática é o servidor (propriedade AUTO_CONFIRMAR), nunca o navegador.
+    const autoConfirmar = PropertiesService.getScriptProperties().getProperty('AUTO_CONFIRMAR') === 'true';
+
+    if (!arquivoBase64) throw new Error('Comprovante não enviado.');
+    if (MIMES_COMPROVANTE.indexOf(arquivoMime) === -1) {
+      throw new Error('Tipo de arquivo não permitido. Envie imagem (JPG, PNG, WebP) ou PDF.');
+    }
+    if (arquivoBase64.length > Math.ceil(MAX_COMPROVANTE_BYTES * 4 / 3) + 4) {
+      throw new Error('Comprovante grande demais (máximo 5 MB).');
+    }
+
+    if (!assinaturaComprovanteValida_(arquivoBase64, arquivoMime)) {
+      throw new Error('O arquivo não parece ser uma imagem ou PDF válido.');
+    }
+
+    // O comprovante só vincula a cotas reservadas (nunca pagas/livres) pelo mesmo WhatsApp (número completo) da reserva.
+    const whatsappInformado = normalizeWhatsapp_(payload.whatsapp);
+    numeros.forEach(function (numero) {
+      const item = byNumber[numero];
+      if (!item || item.data.status === 'livre') {
+        throw new Error('A cota ' + formatCode_(numero) + ' está livre e não possui reserva pendente.');
+      }
+      if (item.data.status === 'pago') {
+        throw new Error('A cota ' + formatCode_(numero) + ' já está paga.');
+      }
+      const dono = canonicalPhone_(item.data.whatsapp);
+      if (!dono || dono !== canonicalPhone_(whatsappInformado)) {
+        throw new Error('O WhatsApp informado não confere com o da reserva da cota ' + formatCode_(numero) + '.');
+      }
+    });
+
+    const now = new Date();
+    const fileUrl = saveProofFile_(arquivoBase64, arquivoNome, arquivoMime, numeros, now);
+    const finalStatus = autoConfirmar ? 'pago' : 'reservado';
+
+    numeros.forEach(function (numero) {
+      const item = byNumber[numero];
+      const row = normalizeRow_(item.values);
+      row[COL.status] = finalStatus;
+      // Nome, WhatsApp e valor da reserva original são preservados (o comprovante não os sobrescreve).
+      row[COL.valor] = Number(row[COL.valor] || VALOR_POR_NUMERO);
+      row[COL.data_reserva] = row[COL.data_reserva] || now;
+      if (autoConfirmar) row[COL.data_pagamento] = now;
+      row[COL.comprovante_nome] = arquivoNome;
+      row[COL.comprovante_url] = fileUrl;
+      row[COL.data_comprovante] = now;
+      row[COL.comprovante_tipo] = arquivoMime;
+      sheet.getRange(item.rowIndex, 1, 1, COLS.length).setValues([row]);
+    });
+
+    return {
+      ok: true,
+      numeros: numeros,
+      status: finalStatus,
+      comprovante_url: fileUrl,
+      message: autoConfirmar ? 'Comprovante recebido e pagamento confirmado!' : 'Comprovante recebido para conferência.'
+    };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function saveProofFile_(base64, name, mimeType, numeros, date) {
+  const folder = getOrCreateFolder_(COMPROVANTES_FOLDER_NAME);
+  const decoded = Utilities.base64Decode(base64);
+  if (decoded.length > MAX_COMPROVANTE_BYTES) throw new Error('Comprovante grande demais (máximo 5 MB).');
+  const formattedNums = numeros.slice(0, 8).map(formatCode_).join('-');
+  const cleanName = Utilities.formatDate(date, Session.getScriptTimeZone(), 'yyyyMMdd-HHmmss') + '-num-' + formattedNums + '-' + name;
+  const blob = Utilities.newBlob(decoded, mimeType, cleanName);
+  // Comprovante é dado pessoal: fica privado na pasta do responsável (sem link público).
+  const file = folder.createFile(blob);
+  return file.getUrl();
+}
+
+function getOrCreateFolder_(name) {
+  const it = DriveApp.getFoldersByName(name);
+  if (it.hasNext()) return it.next();
+  return DriveApp.createFolder(name);
+}
+
+function atualizarStatus_(payload) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+
+  try {
+    const sheet = getSheet_();
+    const rows = getRowsWithIndex_(sheet);
+    const rawNum = payload.numero;
+    if (rawNum === undefined || rawNum === null || String(rawNum).trim() === '') {
+      throw new Error('Número obrigatório.');
+    }
+    const numero = Number(rawNum);
+    const status = String(payload.status || '').toLowerCase().trim();
+
+    if (!isValidNumero_(numero)) {
+      throw new Error('Número inválido. Use entre 0000 e 9999.');
+    }
+    if (['livre', 'reservado', 'pago'].indexOf(status) === -1) {
+      throw new Error('Status inválido. Use livre, reservado ou pago.');
+    }
+
+    const item = rows.find(function (row) { return Number(row.data.numero) === numero; });
+    const current = item ? normalizeRow_(item.values) : [numero, 'livre', '', '', '', '', '', '', '', '', '', ''];
+    const now = new Date();
+    let targetRow = null;
+
+    if (status === 'livre') {
+      targetRow = [numero, 'livre', '', '', '', '', '', '', '', '', '', ''];
+    } else if (status === 'reservado') {
+      targetRow = [
+        numero,
+        'reservado',
+        String(payload.nome || current[COL.nome] || 'Reserva manual').trim(),
+        String(payload.whatsapp || current[COL.whatsapp] || '').trim(),
+        Number(payload.valorPorNumero || current[COL.valor] || VALOR_POR_NUMERO),
+        current[COL.data_reserva] || now,
+        '',
+        String(payload.observacao || current[COL.observacao] || '').trim(),
+        current[COL.comprovante_nome] || '',
+        current[COL.comprovante_url] || '',
+        current[COL.data_comprovante] || '',
+        current[COL.comprovante_tipo] || ''
+      ];
+    } else if (status === 'pago') {
+      targetRow = [
+        numero,
+        'pago',
+        String(payload.nome || current[COL.nome] || '').trim(),
+        String(payload.whatsapp || current[COL.whatsapp] || '').trim(),
+        Number(payload.valorPorNumero || current[COL.valor] || VALOR_POR_NUMERO),
+        current[COL.data_reserva] || now,
+        now,
+        String(payload.observacao || current[COL.observacao] || '').trim(),
+        current[COL.comprovante_nome] || '',
+        current[COL.comprovante_url] || '',
+        current[COL.data_comprovante] || '',
+        current[COL.comprovante_tipo] || ''
+      ];
+    }
+
+    if (item) {
+      sheet.getRange(item.rowIndex, 1, 1, COLS.length).setValues([targetRow]);
+    } else if (status !== 'livre') {
+      sheet.getRange(sheet.getLastRow() + 1, 1, 1, COLS.length).setValues([targetRow]);
+    }
+
+    return { ok: true, numero: numero, status: status, message: 'Status atualizado com sucesso.' };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function parseNumeros_(input) {
+  let numeros = input;
+
+  if (typeof input === 'string') {
+    try {
+      numeros = JSON.parse(input);
+    } catch (ignore) {
+      numeros = input.split(',');
+    }
+  }
+
+  if (!Array.isArray(numeros)) numeros = [numeros];
+
+  const unique = {};
+  numeros.forEach(function (item) {
+    if (item === '' || item === null || item === undefined) return;
+    if (typeof item === 'number') {
+      if (isValidNumero_(item)) unique[item] = true;
+      return;
+    }
+    const rawStr = String(item).trim();
+    if (!rawStr) return;
+    if (/^\d+$/.test(rawStr)) {
+      const n = Number(rawStr);
+      if (isValidNumero_(n)) unique[n] = true;
+      return;
+    }
+    const match = rawStr.match(/(?:^|[^-\d])(\d{1,4})(?!\d)/);
+    if (match) {
+      const parsed = Number(match[1]);
+      if (isValidNumero_(parsed)) unique[parsed] = true;
+    }
+  });
+
+  return Object.keys(unique).map(Number).sort(function (a, b) { return a - b; });
+}
+
+function sanitizeFileName_(name) {
+  return String(name || 'comprovante.jpg')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .slice(0, 90);
+}
+
+function json_(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}

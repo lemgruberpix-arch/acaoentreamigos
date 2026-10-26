@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <meta name="format-detection" content="telephone=no" />
+
+  <meta name="HandheldFriendly" content="true" />
+
+  <meta name="MobileOptimized" content="width" />
+
+  <title>Rifa Honda XRE 190 2018 | Ação Entre Amigos</title>
+
+  <meta name="description" content="Concorra a uma Honda XRE 190 2018 seminova pela Loteria Federal (31/12). Cotas de R$ 20,00 (0000 a 9999) com Pix rápido. Escolha seu número e garanta o seu." />
+
+  <meta name="theme-color" content="#ffffff" />
+
+  <link rel="preconnect" href="https://api.qrserver.com" />
+
+  <link rel="stylesheet" href="assets/style.css?v=mobile10" />
+
+</head>
+
+<body class="public-body">
+
+  <div class="mobile-app-shell">
+
+    <header class="hero-card">
+
+      <div class="hero-topline">
+
+        <span class="mini-pill">🏍️ HONDA XRE 190 • 2018</span>
+
+        <span class="mini-pill" style="background: #dc2626; color: #ffffff; font-weight: 800;">🎁 + CAPACETE INCLUSO</span>
+
+        <span class="mini-pill mini-pill-light">🏁 100 PAINÉIS • 0000–9999</span>
+
+        <button type="button" id="toggleSoundBtn" class="mini-pill sound-toggle-btn" aria-label="Ligar ou desligar som da moto" style="cursor: pointer; border: 1px solid #cbd5e1; background: #ffffff;">🔊 Som</button>
+
+      </div>
+
+      <audio id="engineAudio" preload="none" src="assets/motorcycle-rev.mp3"></audio>
+
+
+
+      <div class="hero-content">
+
+        <div>
+
+          <h1>Sua XRE 190 + Capacete na Garagem!</h1>
+
+          <p>
+
+            Apenas R$ 20,00 por cota! Concorra à Honda XRE 190 2018 seminova impecável + capacete de motocross de brinde no Pix rápido pela Loteria Federal.
+
+          </p>
+
+        </div>
+
+        <img src="assets/xre190-hero.jpg" alt="Honda XRE 190 2018 seminova, prêmio da rifa" class="hero-illustration" />
+
+      </div>
+
+
+
+      <div class="hero-stats">
+
+        <div>
+
+          <span>Valor da Cota</span>
+
+          <strong id="valorNumeroHero">R$ 20,00</strong>
+
+        </div>
+
+        <div>
+
+          <span>Chave Pix</span>
+
+          <strong id="pixHero">22992836392</strong>
+
+        </div>
+
+        <div>
+
+          <span>Data do Sorteio</span>
+
+          <strong id="dataSorteioHero">31/12 (Loteria Federal)</strong>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+
+    <!-- Barra de Confiança e Transparência Oficial (Marketing & Garantia) -->
+    <section class="trust-strip" aria-label="Garantias e Transparência">
+      <div class="trust-item">
+        <span class="trust-icon" aria-hidden="true">🏛️</span>
+        <div>
+          <strong class="trust-title">Loteria Federal</strong>
+          <span class="trust-desc">Sorteio 100% oficial e auditado</span>
+        </div>
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon" aria-hidden="true">⚡</span>
+        <div>
+          <strong class="trust-title">Pix Instantâneo</strong>
+          <span class="trust-desc">QR Code e código copia-e-cola</span>
+        </div>
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon" aria-hidden="true">📱</span>
+        <div>
+          <strong class="trust-title">Comprovante Seguro</strong>
+          <span class="trust-desc">Envio direto pelo app e WhatsApp</span>
+        </div>
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon" aria-hidden="true">🎁</span>
+        <div>
+          <strong class="trust-title">Prêmio Duplo</strong>
+          <span class="trust-desc">Honda XRE 190 + Capacete incluso</span>
+        </div>
+      </div>
+    </section>
+
+    <main>
+
+      <!-- Vitrine Oficial dos Prêmios: Moto + Capacete (Almir #691) -->
+
+      <section class="soft-card prize-showcase-card" style="border: 2px solid #e2e8f0; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.04);">
+
+        <div class="card-title-row" style="margin-bottom: 10px;">
+
+          <div class="icon-bubble" style="background: #0f172a; color: #ffffff;">🏆</div>
+
+          <div>
+
+            <h2 style="font-size: 1.12rem; margin: 0 0 2px; color: #0f172a;">O Que Você Leva por Apenas R$ 20:</h2>
+
+            <p style="margin: 0; color: #64748b; font-size: 0.8rem; font-weight: 600;">Combo completo moto + capacete pronto para acelerar</p>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="dual-prize-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+
+          <div class="prize-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px; text-align: center;">
+
+            <img src="assets/xre190-hero.jpg" alt="Honda XRE 190 2018 seminova" style="width: 100%; height: 110px; object-fit: cover; border-radius: 8px; margin-bottom: 6px;" />
+
+            <strong style="display: block; font-size: 0.86rem; color: #0f172a;">Honda XRE 190</strong>
+
+            <span style="display: block; font-size: 0.72rem; color: #64748b; font-weight: 600;">Ano 2018 • Seminova</span>
+
+          </div>
+
+
+
+          <div class="prize-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px; text-align: center;">
+
+            <img src="assets/capacete-premio.jpg" alt="Capacete de Motocross/Enduro" style="width: 100%; height: 110px; object-fit: contain; background: #ffffff; border-radius: 8px; margin-bottom: 6px;" />
+
+            <strong style="display: block; font-size: 0.86rem; color: #dc2626;">Capacete de Brinde</strong>
+
+            <span style="display: block; font-size: 0.72rem; color: #64748b; font-weight: 600;">Design Pro • Zero KM</span>
+
+          </div>
+
+        </div>
+
+
+
+        <a href="https://wa.me/5522992839362?text=Ol%C3%A1%2C%20quero%20ajuda%20para%20comprar%20minhas%20cotas%20da%20Honda%20XRE%20190%20com%20capacete!" target="_blank" rel="noopener" class="button button-whatsapp button-full" style="font-size: 0.88rem; padding: 11px 14px; text-decoration: none;">
+
+          💬 Precisa de Ajuda? Compre no WhatsApp
+
+        </a>
+
+      </section>
+
+      <!-- Anúncio Oficial: Sorteio Ao Vivo no YouTube (Almir #389) -->
+
+            <!-- Passo a passo facil para pessoas simples (Almir #601 / Almir #1489) -->
+      <section class="soft-card steps-card" style="background: #ffffff; border: 2px solid #fecaca; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.07);">
+        <h3 style="margin: 0 0 12px; font-size: 1rem; font-weight: 800; color: #991b1b; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
+          <span>&#9889;</span> Como Participar em 4 Passos Rápidos:
+        </h3>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+          <div style="display: flex; align-items: flex-start; gap: 12px; background: #fef2f2; padding: 10px 14px; border-radius: 12px; border-left: 4px solid #dc2626;">
+            <span style="background: #dc2626; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0; margin-top: 1px;">1</span>
+            <div>
+              <strong style="display: block; font-size: 0.9rem; color: #0f172a; margin-bottom: 2px;">Escolha suas cotas da sorte</strong>
+              <span style="font-size: 0.8rem; color: #475569; line-height: 1.35;">Navegue pelos 100 painéis (0000 a 9999) ou clique nos combos promocionais com desconto abaixo.</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 12px; background: #fef2f2; padding: 10px 14px; border-radius: 12px; border-left: 4px solid #dc2626;">
+            <span style="background: #dc2626; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0; margin-top: 1px;">2</span>
+            <div>
+              <strong style="display: block; font-size: 0.9rem; color: #0f172a; margin-bottom: 2px;">Preencha seu Nome e WhatsApp</strong>
+              <span style="font-size: 0.8rem; color: #475569; line-height: 1.35;">Seus dados são protegidos e usados para vincular seus números e avisar você no sorteio.</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 12px; background: #fef2f2; padding: 10px 14px; border-radius: 12px; border-left: 4px solid #dc2626;">
+            <span style="background: #dc2626; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0; margin-top: 1px;">3</span>
+            <div>
+              <strong style="display: block; font-size: 0.9rem; color: #0f172a; margin-bottom: 2px;">Pague no Pix Rápido e Seguro</strong>
+              <span style="font-size: 0.8rem; color: #475569; line-height: 1.35;">Aponte a câmera para o QR Code ou clique em "Copiar Código Pix" para colar no seu banco.</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 12px; background: #fef2f2; padding: 10px 14px; border-radius: 12px; border-left: 4px solid #dc2626;">
+            <span style="background: #dc2626; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; flex-shrink: 0; margin-top: 1px;">4</span>
+            <div>
+              <strong style="display: block; font-size: 0.9rem; color: #0f172a; margin-bottom: 2px;">Envie o comprovante e concorra!</strong>
+              <span style="font-size: 0.8rem; color: #475569; line-height: 1.35;">Envie a foto ou print pelo app ou no WhatsApp. O organizador confere e efetiva suas cotas.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
+      <section class="soft-card live-announcement-card" style="border-left: 4px solid #dc2626; background: #fff5f5; margin-bottom: 16px;">
+
+        <div class="card-title-row" style="margin-bottom: 8px;">
+
+          <div class="icon-bubble" style="background: #dc2626; color: #ffffff; border: none;">🔴</div>
+
+          <div>
+
+            <h2 style="color: #991b1b; font-size: 1.15rem; margin: 0 0 2px;">Sorteio Ao Vivo no YouTube Direto no App!</h2>
+
+            <p style="color: #7f1d1d; font-weight: 600; margin: 0;">Transmissão oficial dia 31 de Dezembro pela Loteria Federal</p>
+
+          </div>
+
+        </div>
+
+        <p class="main-text" style="color: #450a0a; margin-bottom: 10px; line-height: 1.55;">
+
+          O sorteio será realizado ao vivo pelo nosso canal do YouTube com transmissão integrada diretamente aqui no aplicativo! <strong>O ganhador da Honda XRE 190 será avisado na hora</strong> e todos os participantes serão informados do resultado em tempo real.
+
+        </p>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+
+          <span class="mini-pill" style="background: #dc2626; font-size: 0.72rem;">📡 TRANSMISSÃO AO VIVO</span>
+
+          <span class="mini-pill mini-pill-light" style="font-size: 0.72rem;">🔔 GANHADOR AVISADO NA HORA</span>
+
+          <span class="mini-pill mini-pill-light" style="font-size: 0.72rem;">🏛️ LOTERIA FEDERAL (31/12)</span>
+
+        </div>
+
+      </section>
+
+
+
+      <section class="soft-card cause-card">
+
+        <div class="card-title-row">
+
+          <div class="icon-bubble">🏁</div>
+
+          <div>
+
+            <h2>Por que participar?</h2>
+
+            <p>R$ 20 hoje, uma moto na garagem no fim do ano.</p>
+
+          </div>
+
+        </div>
+
+
+
+        <p class="main-text">
+
+          Sorteio da <strong>Honda XRE 190 2018 seminova</strong>: a trail que encara cidade, estrada e terra com economia e estilo. Cada número custa apenas <strong>R$ 20,00</strong> e os números estão organizados em <strong>100 painéis de 100 cotas (0000 a 9999)</strong>.
+
+        </p>
+
+        <p class="support-text">
+
+          <strong>Sorteio transparente pela Loteria Federal (31/12):</strong> vale a dezena de milhar (4 últimos dígitos do 1º prêmio). Caso a cota não tenha sido vendida, apura-se sucessivamente pelo 2º, 3º, 4º e 5º prêmios.
+
+        </p>
+
+
+
+        <div class="mini-info-grid">
+
+          <div><span>Prêmio</span><strong id="premioInfo">Honda XRE 190 2018 + Capacete de Brinde</strong></div>
+
+          <div><span>Responsável</span><strong id="responsavelInfo">Welington Santos</strong></div>
+
+        </div>
+
+
+
+        <div class="pix-box">
+
+          <div>
+
+            <span>Chave Pix Oficial</span>
+
+            <strong id="pixKeyText">22992836392</strong>
+
+          </div>
+
+          <button class="button button-blue" type="button" id="copyPixBtn">Copiar Pix</button>
+
+        </div>
+
+
+
+        <button class="button button-whatsapp button-full" type="button" id="shareBtn" style="margin-top: 12px;">Compartilhar Rifa no WhatsApp</button>
+
+      </section>
+
+
+
+      <section class="soft-card numbers-card">
+
+        <div class="card-title-row title-with-action">
+
+          <div class="title-left">
+
+            <div class="icon-bubble">🎯</div>
+
+            <div>
+
+              <h2>Escolha suas cotas (0000 a 9999)</h2>
+
+              <p>Navegue pelos 100 painéis ou busque seus 4 dígitos da sorte.</p>
+
+            </div>
+
+          </div>
+
+          <button class="small-button" type="button" id="refreshBtn">Atualizar</button>
+
+        </div>
+
+
+
+        <div class="panel-controls" aria-label="Navegação de painéis e busca de cota">
+
+          <div class="panel-nav-row">
+
+            <button class="small-button panel-step-btn" type="button" id="prevPanelBtn" aria-label="Painel anterior">◀ Ant.</button>
+
+            <select id="panelSelect" class="panel-select" aria-label="Selecionar painel de 100 números"></select>
+
+            <button class="small-button panel-step-btn" type="button" id="nextPanelBtn" aria-label="Próximo painel">Próx. ▶</button>
+
+          </div>
+
+          <div class="panel-search-row">
+
+            <input type="text" id="searchNumberInput" class="search-number-input" inputmode="numeric" maxlength="4" placeholder="Buscar cota (ex.: 0777)" aria-label="Buscar número de 4 dígitos" />
+
+            <button class="button button-blue search-number-btn" type="button" id="searchNumberBtn">Ir / Marcar</button>
+
+          </div>
+
+                    <div class="quick-pick-bar" aria-label="Escolha rápida de cotas promocionais">
+            <div class="quick-pick-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; width: 100%;">
+              <span class="quick-pick-label" style="font-weight: 800; color: #0f172a; font-size: 0.85rem;">&#9889; Combos Promocionais com Desconto:</span>
+              <button class="quick-pick-btn clear-btn" type="button" id="clearSelectionBtn" style="font-size: 0.78rem; padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; color: #64748b; cursor: pointer; min-height: 38px;">Limpar seleção</button>
+            </div>
+            <div class="quick-pick-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;">
+              <button class="quick-pick-btn qp-card" type="button" data-quick-pick="1" style="min-height: 52px; padding: 10px; border-radius: 10px; border: 2px solid #cbd5e1; background: #ffffff; text-align: left; cursor: pointer; transition: transform 0.1s ease;">
+                <span style="font-size: 0.7rem; font-weight: 800; color: #64748b; display: block; text-transform: uppercase;">Individual</span>
+                <strong style="font-size: 0.9rem; color: #0f172a;">&#127922; +1 cota</strong>
+                <span style="font-size: 0.8rem; font-weight: 800; color: #0f172a; float: right;">R$ 20</span>
+              </button>
+              <button class="quick-pick-btn qp-card" type="button" data-quick-pick="3" style="min-height: 52px; padding: 10px; border-radius: 10px; border: 2px solid #f59e0b; background: #fffbeb; text-align: left; cursor: pointer; transition: transform 0.1s ease;">
+                <span style="font-size: 0.68rem; font-weight: 900; color: #b45309; display: block; text-transform: uppercase;">&#11088; Economize R$ 10</span>
+                <strong style="font-size: 0.9rem; color: #92400e;">+3 cotas</strong>
+                <span style="font-size: 0.8rem; font-weight: 800; color: #92400e; float: right;">R$ 50</span>
+              </button>
+              <button class="quick-pick-btn qp-card" type="button" data-quick-pick="6" style="min-height: 52px; padding: 10px; border-radius: 10px; border: 2px solid #dc2626; background: #fef2f2; text-align: left; cursor: pointer; transition: transform 0.1s ease; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);">
+                <span style="font-size: 0.68rem; font-weight: 900; color: #dc2626; display: block; text-transform: uppercase;">&#128293; Mais Escolhido</span>
+                <strong style="font-size: 0.9rem; color: #991b1b;">+6 cotas</strong>
+                <span style="font-size: 0.8rem; font-weight: 800; color: #991b1b; float: right;">R$ 100 <small style="font-size: 0.65rem;">(Eco. R$20)</small></span>
+              </button>
+              <button class="quick-pick-btn qp-card" type="button" data-quick-pick="10" style="min-height: 52px; padding: 10px; border-radius: 10px; border: 2px solid #2563eb; background: #eff6ff; text-align: left; cursor: pointer; transition: transform 0.1s ease; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);">
+                <span style="font-size: 0.68rem; font-weight: 900; color: #1d4ed8; display: block; text-transform: uppercase;">&#128640; Super Chance</span>
+                <strong style="font-size: 0.9rem; color: #1e40af;">+10 cotas</strong>
+                <span style="font-size: 0.8rem; font-weight: 800; color: #1e40af; float: right;">R$ 170 <small style="font-size: 0.65rem;">(Eco. R$30)</small></span>
+              </button>
+            </div>
+          </div>
+
+          <aside class="promo-strip" aria-label="Promoções automáticas">
+
+            <strong>Promoção automática:</strong><span>⭐ 3 por R$ 50</span><span>🔥 6 por R$ 100</span><span>🚀 10 por R$ 170</span>
+
+          </aside>
+
+          <div class="panel-meta-row" id="panelMetaText">Painel 01 de 100 • Números 0000 a 0099</div>
+
+        </div>
+
+
+
+        <div class="legend-mobile">
+
+          <span><i class="status-dot free"></i>Livre</span>
+
+          <span><i class="status-dot selected"></i>Selecionada</span>
+
+          <span><i class="status-dot reserved"></i>Reservada</span>
+
+          <span><i class="status-dot paid"></i>Paga</span>
+
+        </div>
+
+
+
+        <div id="statusMessage" class="message-box" hidden></div>
+
+        <div id="numbersGrid" class="numbers-grid" aria-live="polite"></div>
+
+
+
+        <div class="total-card">
+
+          <div>
+
+            <span>Cotas Selecionadas</span>
+
+            <strong id="selectedNumbersText">Nenhuma</strong>
+
+          </div>
+
+          <div>
+
+            <span>Total a Pagar</span>
+
+            <strong id="selectedTotalText">R$ 0,00</strong>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <section class="soft-card form-card">
+
+        <div class="card-title-row">
+
+          <div class="icon-bubble">⚡</div>
+
+          <div>
+
+            <h2>Confirmar e pagar</h2>
+
+            <p>Após reservar, o app gera o QR Code, Pix copia-e-cola e envio de comprovante.</p>
+
+          </div>
+
+        </div>
+
+
+
+        <form id="reserveForm" autocomplete="on" class="mobile-form">
+
+          <label>
+
+            Nome completo
+
+            <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required />
+
+            <small style="display:block; color: #64748b; font-size: 0.78rem; font-weight: 500; margin-top: 4px;">Nome oficial do bilhete para apuração da Loteria Federal</small>
+
+          </label>
+
+          <label>
+
+            WhatsApp (com DDD)
+
+            <input type="tel" id="whatsapp" name="whatsapp" placeholder="Ex.: 22 99999-9999" required />
+
+            <small style="display:block; color: #64748b; font-size: 0.78rem; font-weight: 500; margin-top: 4px;">Para avisarmos você e enviarmos a confirmação</small>
+
+          </label>
+
+          <label>
+
+            Observação opcional
+
+            <textarea id="observacao" name="observacao" rows="2" placeholder="Algum recado ou número preferido (opcional)"></textarea>
+
+          </label>
+
+          <button class="button button-main button-full" type="submit" id="reserveBtn" style="font-size: 1.05rem; padding: 14px 20px;">🔒 Confirmar e Gerar Meu Pix (R$ 20)</button>
+
+        </form>
+
+      </section>
+
+    </main>
+
+
+
+    <footer class="soft-card footer-card">
+
+      <p>
+
+        Boa sorte a todos os participantes! Sorteio apurado pela extração da Loteria Federal.
+
+      </p>
+
+      <blockquote>“Porque Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia.” — Salmo 46:1</blockquote>
+
+    </footer>
+
+  </div>
+
+
+
+  <div class="bottom-summary" id="bottomSummary" hidden>
+
+    <div>
+
+      <span>Cotas Selecionadas</span>
+
+      <strong id="bottomSelectedText">Nenhuma</strong>
+
+    </div>
+
+    <button class="button button-main" type="button" id="goToFormBtn">🏍️ Comprar Cotas</button>
+
+  </div>
+
+
+
+  <div class="modal" id="successModal" aria-hidden="true">
+
+    <div class="modal-backdrop" data-close-modal></div>
+
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+      <button class="modal-close" type="button" data-close-modal aria-label="Fechar">×</button>
+
+
+
+      <div class="modal-heart">🏍️</div>
+
+      <h2 id="modalTitle">Reserva Confirmada!</h2>
+
+      <p class="modal-subtitle">Efetue o Pix abaixo e envie o comprovante para garantir suas cotas.</p>
+
+
+
+      <div class="payment-summary">
+
+        <div><span>Cotas</span><strong id="modalNumbers">—</strong></div>
+
+        <div><span>Valor Total</span><strong id="modalTotal">—</strong></div>
+
+        <div><span>Chave Pix</span><strong id="modalPixKey">—</strong></div>
+
+      </div>
+
+
+
+      <div class="qr-area">
+
+        <img id="pixQrCode" alt="QR Code Pix" />
+
+        <p>Aponte a câmera do seu banco ou utilize o copia-e-cola abaixo.</p>
+
+      </div>
+
+
+
+      <label class="copy-paste-label">
+
+        Pix copia e cola
+
+        <textarea id="pixCopyPaste" rows="4" readonly></textarea>
+
+      </label>
+
+
+
+            <div class="modal-actions-grid">
+        <button class="button button-main" type="button" id="copyPixPayloadBtn" style="grid-column: 1 / -1; min-height: 52px; font-size: 1.05rem; font-weight: 900; background: #dc2626; color: #ffffff; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.35);">
+          &#128203; Copiar Código Pix (Copia e Cola)
+        </button>
+        <button class="button button-blue" type="button" id="copyPixAgainBtn" style="min-height: 48px; border-radius: 10px; font-weight: 700;">Copiar Chave</button>
+        <a class="button button-whatsapp" id="openWhatsAppBtn" target="_blank" rel="noopener" style="min-height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800;">&#128172; Enviar no WhatsApp</a>
+        <button class="button button-amber" type="button" id="btnDownloadReceipt" style="grid-column: 1 / -1; background: #f59e0b; color: #000; font-weight: 900; font-size: 0.95rem; border-radius: 12px; padding: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: pointer; min-height: 48px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);">&#128229; Baixar Comprovante Oficial (PDF / Imagem)</button>
+      </div>
+
+
+
+      <div class="proof-upload-card">
+
+        <div class="card-title-row compact-title">
+
+          <div class="icon-bubble small">📎</div>
+
+          <div>
+
+            <h3>Enviar comprovante pelo app</h3>
+
+            <p>Envie foto ou print do Pix. A responsável confere no painel na hora.</p>
+
+          </div>
+
+        </div>
+
+
+
+        <label class="file-label">
+
+          <input type="file" id="proofFile" accept="image/*,.pdf" />
+
+          <span id="proofFileName">Escolher comprovante ou print</span>
+
+        </label>
+
+
+
+        <button class="button button-main button-full" type="button" id="sendProofBtn">Enviar comprovante</button>
+
+        <p class="tiny-warning">Por segurança, a confirmação final é conferida no banco pela responsável.</p>
+
+        <div id="proofMessage" class="message-box" hidden></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Fallback de Configuração Pública Sanitizada -->
+
+  <script>
+
+    window.RIFA_CONFIG = window.RIFA_CONFIG || {
+
+      NOME_RIFA: "Ação Entre Amigos — Rifa Honda XRE 190 2018",
+
+      TITULO_CURTO: "Rifa Honda XRE 190",
+
+      SUBTITULO: "Ação Entre Amigos",
+
+      RESPONSAVEL_NOME: "Welington Santos",
+
+      WHATSAPP_RESPONSAVEL: "5522992839362",
+
+      DATA_SORTEIO: "31/12 (Loteria Federal)",
+
+      PREMIO_RIFA: "Honda XRE 190 2018 (seminova)",
+
+      PIX_KEY: "22992836392",
+
+      PIX_RECEBEDOR: "WELINGTON SANTOS",
+
+      PIX_CIDADE: "CARMO",
+
+      VALOR_NUMERO: 20,
+
+      QUANTIDADE_NUMEROS: 10000,
+
+      NUMERO_INICIAL: 0,
+
+      TAMANHO_PAINEL: 100,
+
+      AUTO_CONFIRMAR_COM_COMPROVANTE: false,
+
+      API_URL: "https://script.google.com/macros/s/AKfycbxPV_Y1h0k_ZbJl5XsF2fx3v8vx-r-s9mOk5SiaCAtKu3D9Ix5F-smWYPvVfv2g0OoN/exec"
+
+    };
+
+  </script>
+
+  <script src="assets/config.js"></script>
+
+  <script src="assets/app.js?v=clean9_mobile"></script>
+
+  <script>
+
+    (function initSound() {
+      const audio = document.getElementById('engineAudio');
+      const btn = document.getElementById('toggleSoundBtn');
+      if (!audio || !btn) return;
+      let soundEnabled = true;
+
+      window.playMotoSound = function() {
+        if (!soundEnabled) return;
+        try {
+          audio.currentTime = 0;
+          audio.play().catch(function() {});
+        } catch (e) {}
+      };
+
+      // Mute / Unmute toggle button
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        soundEnabled = !soundEnabled;
+        if (soundEnabled) {
+          btn.textContent = '🔊 Som';
+          window.playMotoSound();
+        } else {
+          btn.textContent = '🔇 Mudo';
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
+
+      function hasSelectedNumbers() {
+        const bottom = document.getElementById('bottomSummary');
+        if (bottom && !bottom.hidden) return true;
+        return document.querySelectorAll('.number-button.selected').length > 0;
+      }
+
+      // Trigger sound ONLY on red Comprar click when numbers are selected (Almir #765 / #780 / #792)
+      function attachBuyTriggers() {
+        const goToFormBtn = document.getElementById('goToFormBtn');
+        if (goToFormBtn) {
+          goToFormBtn.addEventListener('click', function() {
+            if (hasSelectedNumbers()) {
+              window.playMotoSound();
+            }
+          });
+        }
+        const reserveBtn = document.getElementById('reserveBtn');
+        if (reserveBtn) {
+          reserveBtn.addEventListener('click', function() {
+            if (hasSelectedNumbers()) {
+              window.playMotoSound();
+            }
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attachBuyTriggers);
+      } else {
+        attachBuyTriggers();
+      }
+    })();
+
+  </script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Cartaz & Bilhete Premiado Oficial | Rifa Honda XRE 190 2018</title>
+  <meta name="description" content="Ação entre amigos com Honda XRE 190 2018 e capacete. Cotas a partir de R$ 20, sorteio em 31/12 pela Loteria Federal." />
+  <meta name="theme-color" content="#f6f2ea" />
+  <style>
+    :root {
+      --bg-dark: #070a12;
+      --ticket-bg: linear-gradient(165deg, #131826 0%, #0b0f19 52%, #170d12 100%);
+      --gold: #fbbf24;
+      --gold-bright: #fde047;
+      --gold-deep: #d97706;
+      --honda-red: #dc2626;
+      --honda-red-bright: #ef4444;
+      --emerald: #10b981;
+      --emerald-dark: #059669;
+      --text-white: #f8fafc;
+      --text-muted: #cbd5e1;
+      --border-gold: rgba(251, 191, 36, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #090d16 55%, #05070c 100%);
+      color: var(--text-white);
+      min-height: 100vh;
+      padding: 16px 12px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Barra de Ações no Topo (Oculta na Impressão) */
+    .top-action-bar {
+      width: 100%;
+      max-width: 680px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid var(--border-gold);
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+      position: sticky;
+      top: 10px;
+      z-index: 50;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      flex: 1 1 auto;
+      text-align: center;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-buy {
+      background: linear-gradient(135deg, var(--honda-red) 0%, #b91c1c 100%);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(220, 38, 38, 0.45);
+    }
+
+    .btn-whatsapp {
+      background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-print {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+      color: #111827;
+      box-shadow: 0 6px 18px rgba(251, 191, 36, 0.35);
+    }
+
+    /* Container Principal do Cartaz / Bilhete Premiado (9:16 Story & A4 Ready) */
+    .poster-ticket {
+      width: 100%;
+      max-width: 680px;
+      background: var(--ticket-bg);
+      border: 2px solid var(--gold);
+      border-radius: 26px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(251, 191, 36, 0.15);
+    }
+
+    /* Picote lateral de Bilhete Premiado */
+    .poster-ticket::before,
+    .poster-ticket::after {
+      content: "";
+      position: absolute;
+      top: 54%;
+      width: 34px;
+      height: 34px;
+      background: var(--bg-dark);
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      z-index: 10;
+    }
+
+    .poster-ticket::before {
+      left: -19px;
+    }
+
+    .poster-ticket::after {
+      right: -19px;
+    }
+
+    /* Cabeçalho de Bilhete Oficial */
+    .ticket-header {
+      background: linear-gradient(90deg, #991b1b 0%, #dc2626 50%, #7f1d1d 100%);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed rgba(251, 191, 36, 0.6);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .ticket-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.45);
+      color: var(--gold-bright);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid rgba(253, 224, 71, 0.4);
+    }
+
+    .ticket-serial {
+      font-family: "Courier New", Courier, monospace;
+      font-weight: 900;
+      font-size: 0.92rem;
+      color: #ffffff;
+      background: rgba(15, 23, 42, 0.75);
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--gold);
+      letter-spacing: 0.08em;
+    }
+
+    /* Corpo do Cartaz */
+    .poster-body {
+      padding: 24px 22px 20px;
+    }
+
+    .region-callout {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .region-pill {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.16);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .headline {
+      font-size: clamp(1.55rem, 4.8vw, 2.25rem);
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.15;
+      color: #ffffff;
+      text-transform: uppercase;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      margin-bottom: 12px;
+    }
+
+    .headline span {
+      color: var(--gold-bright);
+      display: block;
+    }
+
+    .subheadline {
+      font-size: clamp(1rem, 2.8vw, 1.18rem);
+      text-align: center;
+      color: #f1f5f9;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.14), rgba(220, 38, 38, 0.18));
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 16px;
+      padding: 12px 16px;
+      line-height: 1.45;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .subheadline strong {
+      color: var(--gold-bright);
+      font-weight: 900;
+    }
+
+    /* Hero da Moto com Selo de Preço Gigante */
+    .hero-showcase {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid var(--gold);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65);
+      margin-bottom: 20px;
+      background: #000;
+    }
+
+    .hero-showcase img {
+      width: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .price-burst {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: linear-gradient(145deg, var(--gold-bright) 0%, #f59e0b 100%);
+      color: #090d16;
+      padding: 10px 16px;
+      border-radius: 18px;
+      font-weight: 900;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      border: 2px solid #ffffff;
+      transform: rotate(3deg);
+    }
+
+    .price-burst .small-label {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .price-burst .big-price {
+      font-size: 1.65rem;
+      line-height: 1.05;
+      color: #7f1d1d;
+    }
+
+    .hero-caption-bar {
+      background: linear-gradient(90deg, rgba(9, 13, 22, 0.95), rgba(127, 29, 29, 0.92));
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--gold-bright);
+    }
+
+    /* Argumentos para Mototaxistas e Trabalhadores */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .benefit-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    .benefit-icon {
+      font-size: 1.45rem;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .benefit-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--gold-bright);
+      margin-bottom: 3px;
+      display: block;
+    }
+
+    .benefit-desc {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* Divisória Pontilhada do Bilhete */
+    .ticket-divider {
+      border-top: 2px dashed rgba(251, 191, 36, 0.45);
+      margin: 18px -22px;
+      position: relative;
+    }
+
+    /* Mini-Cartela Interativa (Clique e Escolha sua Cota) */
+    .mini-cartela-section {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .mini-cartela-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .mini-cartela-head h3 {
+      font-size: 0.95rem;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .mini-cartela-head span {
+      font-size: 0.76rem;
+      color: #6ee7b7;
+      font-weight: 700;
+    }
+
+    .lucky-numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .lucky-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      color: #ffffff;
+      text-decoration: none;
+      font-family: "Courier New", Courier, monospace;
+      font-weight: 900;
+      font-size: 0.95rem;
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+
+    .lucky-chip small {
+      font-family: inherit;
+      font-size: 0.62rem;
+      color: #6ee7b7;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .lucky-chip:hover {
+      transform: scale(1.05);
+      background: linear-gradient(145deg, var(--honda-red), #991b1b);
+      border-color: #ffffff;
+    }
+
+    .cartela-cta-link {
+      display: block;
+      text-align: center;
+      background: linear-gradient(90deg, var(--emerald) 0%, var(--emerald-dark) 100%);
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 0.92rem;
+      padding: 11px 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+    }
+
+    /* Seção QR Code + Dados Oficiais de Pagamento e Sorteio */
+    .qr-and-details {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 18px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .qr-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+      color: #090d16;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .qr-card img {
+      width: 100%;
+      max-width: 185px;
+      height: auto;
+      display: block;
+      margin: 0 auto 8px;
+    }
+
+    .qr-label {
+      font-size: 0.74rem;
+      font-weight: 900;
+      line-height: 1.25;
+      color: #991b1b;
+      text-transform: uppercase;
+    }
+
+    .details-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .detail-box {
+      background: rgba(9, 13, 22, 0.75);
+      border-left: 4px solid var(--gold);
+      border-radius: 10px;
+      padding: 9px 12px;
+    }
+
+    .detail-box.youtube-live {
+      border-left-color: var(--honda-red-bright);
+      background: rgba(127, 29, 29, 0.35);
+    }
+
+    .detail-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .detail-value {
+      font-size: 0.96rem;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .detail-value.highlight-gold {
+      color: var(--gold-bright);
+      font-size: 1.05rem;
+    }
+
+    .detail-value a {
+      color: #6ee7b7;
+      text-decoration: none;
+    }
+
+    /* Rodapé de Transparência e Fé */
+    .poster-footer {
+      text-align: center;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .poster-footer strong {
+      color: var(--gold-bright);
+    }
+
+    @media (max-width: 580px) {
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+      .qr-and-details {
+        grid-template-columns: 1fr;
+      }
+      .qr-card {
+        max-width: 240px;
+        margin: 0 auto;
+      }
+      .lucky-numbers-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    /* Estilo Especial para Impressão A4 / Salvar PDF Limpo */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 8mm;
+      }
+      body {
+        background: #090d16 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        padding: 0 !important;
+      }
+      .top-action-bar {
+        display: none !important;
+      }
+      .poster-ticket {
+        max-width: 100% !important;
+        box-shadow: none !important;
+        border-width: 2px !important;
+      }
+    }
+    /* Direção visual "Luz de Estrada": clara, editorial e econômica na impressão. */
+    :root {
+      --bg-dark: #f6f2ea;
+      --ticket-bg: linear-gradient(155deg, #fffdf8 0%, #f7f2e9 100%);
+      --gold: #d6a64b;
+      --gold-bright: #b7791f;
+      --gold-deep: #9a6a1d;
+      --honda-red: #c8222a;
+      --honda-red-bright: #dc3038;
+      --emerald: #19745d;
+      --emerald-dark: #145c4a;
+      --text-white: #172033;
+      --text-muted: #5f6877;
+      --border-gold: rgba(183, 121, 31, 0.26);
+    }
+    body {
+      background: #ece8df;
+      color: #172033;
+    }
+    .top-action-bar,
+    .canvas-preview {
+      background: rgba(255, 253, 248, 0.96) !important;
+      border-color: #ded7c9 !important;
+      box-shadow: 0 12px 32px rgba(38, 43, 51, 0.12) !important;
+      color: #172033;
+    }
+    .top-action-bar .action-btn:not(.btn-buy) {
+      background: #ffffff !important;
+      color: #263043 !important;
+      border: 1px solid #ded7c9;
+      box-shadow: none !important;
+    }
+    .canvas-preview { display: none; }
+    .poster-ticket {
+      background: var(--ticket-bg);
+      border: 1px solid #ded7c9;
+      box-shadow: 0 28px 70px rgba(38, 43, 51, 0.18);
+    }
+    .poster-ticket::before,
+    .poster-ticket::after { display: none; }
+    .ticket-header {
+      background: #fffdf8;
+      border-bottom: 1px solid #e7dfd0;
+      color: #172033;
+    }
+    .ticket-badge {
+      background: #f8e7e5;
+      color: #a51f28;
+      border-color: #efcbc8;
+    }
+    .ticket-serial {
+      color: #5f6877;
+      background: transparent;
+      border-color: #d8d0c2;
+    }
+    .poster-body { padding: 30px 30px 26px; }
+    .region-pill {
+      background: #eef5f1;
+      color: #285b4b;
+      border-color: #cbded5;
+    }
+    .headline {
+      color: #172033;
+      text-shadow: none;
+      letter-spacing: -0.035em;
+    }
+    .headline span { color: #c8222a; }
+    .subheadline {
+      color: #465061;
+      background: #fff;
+      border-color: #e5ded1;
+    }
+    .subheadline strong { color: #172033; }
+    .hero-showcase {
+      background: #fff;
+      border-color: #e2dbce;
+      box-shadow: 0 16px 34px rgba(38, 43, 51, 0.12);
+    }
+    .hero-showcase img { max-height: 380px; object-fit: contain; background: #fff; }
+    .price-burst {
+      background: #c8222a;
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(200, 34, 42, 0.24);
+    }
+    .hero-caption-bar { background: rgba(255, 253, 248, 0.94); color: #263043; }
+    .prize-pair {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 18px;
+      align-items: center;
+      padding: 16px;
+      margin: -4px 0 20px;
+      background: #fff;
+      border: 1px solid #e5ded1;
+      border-radius: 18px;
+    }
+    .prize-pair img { width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: 14px; }
+    .prize-pair strong { display: block; color: #172033; font-size: 1.05rem; margin-bottom: 5px; }
+    .prize-pair p { color: #626b79; line-height: 1.45; }
+    .combo-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 0 0 20px;
+    }
+    .combo-strip div {
+      padding: 12px 8px;
+      text-align: center;
+      background: #f8f3ea;
+      border: 1px solid #e3d8c7;
+      border-radius: 14px;
+      color: #172033;
+      font-weight: 800;
+    }
+    .combo-strip strong { display: block; color: #c8222a; font-size: 1.05rem; }
+    .benefit-card,
+    .mini-cartela-section,
+    .detail-box,
+    .qr-card {
+      background: #fff;
+      border-color: #e5ded1;
+      box-shadow: none;
+      color: #172033;
+    }
+    .benefit-title,
+    .mini-cartela-head h3,
+    .detail-value { color: #172033; }
+    .benefit-desc,
+    .mini-cartela-head span,
+    .detail-label { color: #68717f; }
+    .lucky-chip { background: #f5f1e9; color: #172033; border-color: #ddd5c6; }
+    .lucky-chip small { color: #19745d; }
+    .cartela-cta-link { background: #c8222a; color: #fff; box-shadow: none; }
+    .qr-card img { background: #fff; border-color: #d8d0c2; }
+    .highlight-gold { color: #a51f28 !important; }
+    .youtube-live { background: #f8f3ea; border-color: #e5d5bb; }
+    .poster-footer { color: #5f6877; border-top-color: #ded7c9; }
+    @media (max-width: 560px) {
+      .poster-body { padding: 22px 16px 18px; }
+      .prize-pair { grid-template-columns: 104px 1fr; }
+      .combo-strip { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: #fff !important; padding: 0 !important; }
+      .poster-ticket { border: 1px solid #cfc7ba !important; }
+      .prize-pair { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Ações Rápidas (Oculta ao Imprimir / Gerar PDF) -->
+  <nav class="top-action-bar" aria-label="Ações do Cartaz">
+    <a href="index.html" class="action-btn btn-buy">🛒 Escolher Minha Cota Agora</a>
+    <a href="canvas-instagram.html" class="action-btn btn-whatsapp" style="background:#0284c7;">🎨 Estúdio Canvas Pro (A4 / Vídeo / Combos)</a>
+    <a href="canvas-instagram.html" class="action-btn btn-print">📥 Criar artes PNG para Instagram e A4</a>
+    <button type="button" class="action-btn btn-whatsapp" id="sharePosterBtn">📲 Compartilhar Cartaz no WhatsApp</button>
+    <button type="button" class="action-btn btn-print" onclick="window.print()">🖨️ Imprimir Cartaz / Salvar PDF para Instagram</button>
+  </nav>
+
+  <!-- Prévia e Geração em Canvas HTML5 de Alta Resolução (1080x1920) -->
+  <section class="canvas-preview" style="width: 100%; max-width: 680px; border-radius: 20px; padding: 14px; margin-bottom: 20px; text-align: center;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+      <strong style="color: var(--gold-bright); font-size: 0.9rem;">🖼️ ARTE OFICIAL EM CANVAS HTML5 (1080×1920 HD — STORIES / REELS / STATUS)</strong>
+      <span id="canvasStatusBadge" style="font-size: 0.76rem; color: #6ee7b7; font-weight: 800;">✓ Canvas Renderizado</span>
+    </div>
+    <canvas id="rifaPosterCanvas" width="1080" height="1920" style="width: 100%; max-width: 360px; height: auto; border-radius: 14px; border: 2px solid var(--gold); box-shadow: 0 10px 25px rgba(0,0,0,0.65); display: block; margin: 0 auto;"></canvas>
+    <canvas id="posterCanvas" width="1080" height="1920" style="display:none;"></canvas>
+  </section>
+
+  <!-- Cartaz / Bilhete Premiado Oficial -->
+  <article class="poster-ticket">
+    <header class="ticket-header">
+      <span class="ticket-badge">🎟️ BILHETE PREMIADO OFICIAL • AÇÃO ENTRE AMIGOS</span>
+      <span class="ticket-serial">SÉRIE 0000–9999</span>
+    </header>
+
+    <div class="poster-body">
+      <div class="region-callout">
+        <span class="region-pill">🏍️ Moto + capacete • Sorteio em 31/12</span>
+      </div>
+
+      <h1 class="headline">
+        HONDA XRE 190 + CAPACETE
+        <span>PARTICIPE POR R$ 20</span>
+      </h1>
+
+      <p class="subheadline">
+        <strong>Cota individual por R$ 20,00.</strong> Escolha seus números, pague por Pix e envie o comprovante. Sorteio em 31/12 pela Loteria Federal.
+      </p>
+
+      <!-- Foto Oficial da Moto -->
+      <div class="hero-showcase">
+        <img src="assets/xre190-hero.jpg" alt="Honda XRE 190 2018 seminova — Prêmio Oficial da Rifa" />
+        <div class="price-burst">
+          <span class="small-label">Apenas</span>
+          <span class="big-price">R$ 20,00</span>
+          <span class="small-label">Por Cota</span>
+        </div>
+        <div class="hero-caption-bar">
+          <span>🏍️ HONDA XRE 190 • 2018 SEMINOVA</span>
+          <span>📄 DETALHES E DOCUMENTAÇÃO COM O RESPONSÁVEL</span>
+        </div>
+      </div>
+
+      <div class="prize-pair">
+        <img src="assets/capacete-premio.jpg" alt="Capacete vermelho e preto que acompanha o prêmio" />
+        <div>
+          <strong>Moto + capacete no prêmio</strong>
+          <p>Honda XRE 190 2018 e capacete. Imagens ilustrativas; detalhes e documentação podem ser confirmados com o responsável.</p>
+        </div>
+      </div>
+
+      <div class="combo-strip" aria-label="Combos promocionais">
+        <div><strong>3 por R$ 50</strong> economize R$ 10</div>
+        <div><strong>6 por R$ 100</strong> economize R$ 20</div>
+        <div><strong>10 por R$ 170</strong> economize R$ 30</div>
+      </div>
+
+      <!-- Destaques de Esperança e Trabalho -->
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <span class="benefit-icon">💰</span>
+          <span class="benefit-title">Cota individual: R$ 20</span>
+          <p class="benefit-desc">Escolha um ou mais números e confira os combos antes de reservar.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">🚀</span>
+          <span class="benefit-title">Reserva identificada</span>
+          <p class="benefit-desc">Pagamento por Pix e envio de comprovante para confirmação manual.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">📡</span>
+          <span class="benefit-title">Ao Vivo no YouTube</span>
+          <p class="benefit-desc">Sorteio em 31/12 pela Loteria Federal, com transmissão anunciada no site.</p>
+        </div>
+      </div>
+
+      <div class="ticket-divider"></div>
+
+      <!-- Mini-Cartela Visual Clicável (0000 a 9999) -->
+      <section class="mini-cartela-section" aria-label="Amostra de cotas da sorte">
+        <div class="mini-cartela-head">
+          <h3>🎯 Escolha seus 4 dígitos da sorte (0000 a 9999)</h3>
+          <span>Toque em qualquer número para abrir a cartela!</span>
+        </div>
+        <div class="lucky-numbers-grid">
+          <a href="index.html?cota=0007" class="lucky-chip">0007<small>Livre</small></a>
+          <a href="index.html?cota=0190" class="lucky-chip">0190<small>Livre</small></a>
+          <a href="index.html?cota=0777" class="lucky-chip">0777<small>Livre</small></a>
+          <a href="index.html?cota=1234" class="lucky-chip">1234<small>Livre</small></a>
+          <a href="index.html?cota=2018" class="lucky-chip">2018<small>Livre</small></a>
+          <a href="index.html?cota=2027" class="lucky-chip">2027<small>Livre</small></a>
+          <a href="index.html?cota=3333" class="lucky-chip">3333<small>Livre</small></a>
+          <a href="index.html?cota=5555" class="lucky-chip">5555<small>Livre</small></a>
+          <a href="index.html?cota=7777" class="lucky-chip">7777<small>Livre</small></a>
+          <a href="index.html?cota=9999" class="lucky-chip">9999<small>Livre</small></a>
+        </div>
+        <a href="index.html" class="cartela-cta-link">👉 VER TODAS AS 10.000 COTAS (0000 A 9999) E GARANTIR A MINHA</a>
+      </section>
+
+      <!-- QR Code Oficial + Informações de Pagamento -->
+      <section class="qr-and-details" aria-label="QR Code de Compra e Dados Oficiais">
+        <div class="qr-card">
+          <img
+            src="assets/qrcode-rifa.png"
+            alt="QR Code Oficial para comprar cota da Rifa Honda XRE 190"
+            width="185"
+            height="185"
+          />
+          <div class="qr-label">APONTE A CÂMERA DO CELULAR E ESCOLHA SUA COTA NA HORA!</div>
+        </div>
+
+        <div class="details-list">
+          <div class="detail-box">
+            <span class="detail-label">Valor por Cota (0000 a 9999)</span>
+            <div class="detail-value highlight-gold">R$ 20,00 (Pix Rápido e Reserva Imediata)</div>
+          </div>
+
+          <div class="detail-box youtube-live">
+            <span class="detail-label">Data do Sorteio Oficial</span>
+            <div class="detail-value">🔴 31/12 pela Loteria Federal — TRANSMISSÃO AO VIVO NO YOUTUBE!</div>
+          </div>
+
+          <div class="detail-box">
+            <span class="detail-label">Chave Pix Oficial (Welington Santos - Carmo/RJ)</span>
+            <div class="detail-value highlight-gold">22992836392</div>
+          </div>
+
+          <div class="detail-box">
+            <span class="detail-label">WhatsApp Oficial de Suporte e Comprovantes</span>
+            <div class="detail-value">
+              <a href="https://wa.me/5522992839362" target="_blank" rel="noopener">📲 (22) 99283-9362 — Falar no WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="poster-footer">
+        <p>
+          <strong>Site Oficial de Vendas:</strong> <span id="publicSiteLabel"></span> • Responsável: <strong>Welington Santos</strong>
+        </p>
+        <p style="margin-top: 4px;">
+          “Porque Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia.” — Salmo 46:1
+        </p>
+      </footer>
+    </div>
+  </article>
+
+  <script>
+    (function () {
+      var PUBLIC_SITE_URL = 'https://lemgruberpix-arch.github.io/acaoentreamigos/';
+      var publicSiteLabel = document.getElementById('publicSiteLabel');
+      if (publicSiteLabel) publicSiteLabel.textContent = PUBLIC_SITE_URL;
+      var shareBtn = document.getElementById('sharePosterBtn');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', function () {
+          var text = [
+            '🏍️ *MUDE DE VIDA EM 2027 COM UMA HONDA XRE 190 NA GARAGEM!*',
+            '',
+            '🔥 Por apenas *R$ 20,00* (o valor de 2 corridas!), você concorre a uma *Honda XRE 190 2018 seminova* pronta pra trabalhar ou passear!',
+            '🎯 Cotas de *0000 a 9999* | Sorteio *31/12 pela Loteria Federal* com *TRANSMISSÃO AO VIVO NO YOUTUBE!*',
+            '💳 Chave Pix: *22992836392* (Welington Santos)',
+            '📲 WhatsApp Oficial: *(22) 99283-9362*',
+            '',
+            '👉 *Escolha sua cota agora no link oficial:*',
+            PUBLIC_SITE_URL
+          ].join('\n');
+          var url = 'https://wa.me/?text=' + encodeURIComponent(text);
+          window.open(url, '_blank', 'noopener');
+        });
+      }
+
+      // Gerador de Cartaz em HTML5 Canvas (1080x1920 Story / Feed / Status)
+      var canvasBtn = document.getElementById('downloadCanvasBtn');
+      var mainCanvas = document.getElementById('rifaPosterCanvas');
+      var backupCanvas = document.getElementById('posterCanvas');
+
+      function drawPosterOnCanvas(canvas, heroImg, qrImg) {
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+
+        // Fundo escuro premium com gradiente
+        var grad = ctx.createLinearGradient(0, 0, 0, 1920);
+        grad.addColorStop(0, '#131826');
+        grad.addColorStop(0.5, '#090d16');
+        grad.addColorStop(1, '#1a0b10');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1080, 1920);
+
+        // Moldura Dourada de Bilhete Premiado
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 8;
+        ctx.strokeRect(30, 30, 1020, 1860);
+
+        // Faixa Vermelha Superior
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(34, 34, 1012, 110);
+        ctx.fillStyle = '#fde047';
+        ctx.font = '900 32px Inter, Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🎟️ BILHETE PREMIADO OFICIAL • SÉRIE 0000–9999', 540, 100);
+
+        // Chamada Mototaxistas
+        ctx.fillStyle = '#6ee7b7';
+        ctx.font = '800 30px Inter, Arial, sans-serif';
+        ctx.fillText('🏍️ ALÔ MOTOTAXISTAS E TRABALHADORES DO NORDESTE, RJ E MG!', 540, 195);
+
+        // Headline Principal
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 54px Inter, Arial, sans-serif';
+        ctx.fillText('MUDE DE VIDA EM 2027 COM UMA', 540, 270);
+        ctx.fillStyle = '#fde047';
+        ctx.font = '900 62px Inter, Arial, sans-serif';
+        ctx.fillText('HONDA XRE 190 NA GARAGEM!', 540, 345);
+
+        // Subheadline R$ 20
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '700 31px Inter, Arial, sans-serif';
+        ctx.fillText('Por apenas R$ 20,00 (o valor de 2 corridas!), você concorre', 540, 410);
+        ctx.fillText('a uma XRE 190 pronta pra trabalhar ou passear!', 540, 452);
+
+        if (heroImg) {
+          ctx.save();
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 6;
+          ctx.strokeRect(70, 490, 940, 520);
+          ctx.drawImage(heroImg, 70, 490, 940, 520);
+          ctx.restore();
+        }
+
+        // Selo de Preço R$ 20,00
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(730, 515, 255, 130);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(730, 515, 255, 130);
+        ctx.fillStyle = '#7f1d1d';
+        ctx.font = '900 24px Inter, Arial, sans-serif';
+        ctx.fillText('APENAS', 857, 552);
+        ctx.font = '900 54px Inter, Arial, sans-serif';
+        ctx.fillText('R$ 20,00', 857, 610);
+
+        // Mini-Cartela no Canvas
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(70, 1045, 940, 230);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(70, 1045, 940, 230);
+        ctx.fillStyle = '#fde047';
+        ctx.font = '900 30px Inter, Arial, sans-serif';
+        ctx.fillText('🎯 ESCOLHA SEUS 4 DÍGITOS DA SORTE (0000 A 9999)', 540, 1095);
+
+        var sampleNums = ['0007', '0190', '0777', '2018', '2027', '7777', '9999'];
+        sampleNums.forEach(function (num, idx) {
+          var bx = 95 + idx * 128;
+          var by = 1125;
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(bx, by, 112, 115);
+          ctx.strokeStyle = '#fbbf24';
+          ctx.strokeRect(bx, by, 112, 115);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 32px Courier New, monospace';
+          ctx.fillText(num, bx + 56, by + 62);
+          ctx.fillStyle = '#6ee7b7';
+          ctx.font = '800 20px Inter, Arial, sans-serif';
+          ctx.fillText('LIVRE', bx + 56, by + 95);
+        });
+
+        // Bloco QR Code e Informações Oficiais
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(70, 1310, 360, 420);
+        if (qrImg) {
+          ctx.drawImage(qrImg, 100, 1330, 300, 300);
+        }
+        ctx.fillStyle = '#991b1b';
+        ctx.font = '900 22px Inter, Arial, sans-serif';
+        ctx.fillText('APONTE A CÂMERA DO CELULAR', 250, 1665);
+        ctx.fillText('E ESCOLHA SUA COTA NA HORA!', 250, 1695);
+
+        // Textos laterais do QR Code
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#fde047';
+        ctx.font = '900 34px Inter, Arial, sans-serif';
+        ctx.fillText('💰 VALOR: R$ 20,00 A COTA', 460, 1365);
+
+        ctx.fillStyle = '#ef4444';
+        ctx.font = '900 28px Inter, Arial, sans-serif';
+        ctx.fillText('🔴 SORTEIO 31/12 (LOTERIA FEDERAL)', 460, 1435);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 26px Inter, Arial, sans-serif';
+        ctx.fillText('TRANSMISSÃO AO VIVO NO YOUTUBE!', 460, 1475);
+
+        ctx.fillStyle = '#fde047';
+        ctx.font = '900 32px Inter, Arial, sans-serif';
+        ctx.fillText('💳 PIX: 22992836392', 460, 1550);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '700 24px Inter, Arial, sans-serif';
+        ctx.fillText('Welington Santos (Carmo/RJ)', 460, 1588);
+
+        ctx.fillStyle = '#6ee7b7';
+        ctx.font = '900 32px Inter, Arial, sans-serif';
+        ctx.fillText('📲 WHATSAPP: (22) 99283-9362', 460, 1665);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 23px Inter, Arial, sans-serif';
+        ctx.fillText(PUBLIC_SITE_URL.replace(/^https?:\/\//, '').replace(/\/$/, ''), 460, 1710);
+
+        // Rodapé
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fde047';
+        ctx.font = '800 26px Inter, Arial, sans-serif';
+        ctx.fillText('GARANTA SUA COTA: ' + PUBLIC_SITE_URL.replace(/^https?:\/\//, '').replace(/\/$/, ''), 540, 1815);
+      }
+
+      function renderAllCanvases(callback) {
+        var hero = new Image();
+        hero.crossOrigin = 'anonymous';
+        var qr = new Image();
+        qr.crossOrigin = 'anonymous';
+        var loaded = 0;
+        function checkDone() {
+          loaded++;
+          if (loaded === 2) {
+            var hImg = hero.complete && hero.naturalWidth ? hero : null;
+            var qImg = qr.complete && qr.naturalWidth ? qr : null;
+            drawPosterOnCanvas(mainCanvas, hImg, qImg);
+            drawPosterOnCanvas(backupCanvas, hImg, qImg);
+            if (callback) callback(mainCanvas || backupCanvas);
+          }
+        }
+        hero.onload = checkDone;
+        hero.onerror = checkDone;
+        qr.onload = checkDone;
+        qr.onerror = checkDone;
+        hero.src = 'assets/xre190-hero.jpg';
+        qr.src = 'assets/qrcode-rifa.png';
+      }
+
+      // Renderiza imediatamente ao abrir a página
+      renderAllCanvases();
+
+      if (canvasBtn) {
+        canvasBtn.addEventListener('click', function () {
+          var origText = canvasBtn.textContent;
+          canvasBtn.textContent = '⏳ Gerando Arte PNG em Canvas...';
+          renderAllCanvases(function (targetCanvas) {
+            try {
+              var dataUrl = targetCanvas.toDataURL('image/png');
+              var a = document.createElement('a');
+              a.href = dataUrl;
+              a.download = 'cartaz-rifa-honda-xre190.png';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            } catch (err) {
+              window.print();
+            }
+            canvasBtn.textContent = origText;
+          });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

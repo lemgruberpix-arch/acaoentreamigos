@@ -1,0 +1,9 @@
+# Painel adm e arquivos locais NUNCA vao para a internet (GitHub Pages serve todo o repositorio)
+admin.html
+admin/
+admin-*.html
+admin-*.js
+.test-tmp-central/
+publicar/
+admin.html.bak
+.publish-staging-*/

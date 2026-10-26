@@ -1,0 +1,11 @@
+Motorcycle Kickstart and Rev
+Creator: bone666138
+Source: https://freesound.org/people/bone666138/sounds/202809/
+Source recording: 1981 Honda XL250s, kickstarting, revving and shutting down.
+License: Creative Commons Zero (CC0)
+License reference: https://creativecommons.org/publicdomain/zero/1.0/
+
+App asset: motorcycle-rev.mp3
+The app asset is an unlayered 3.5-second excerpt from the real field recording.
+No synthetic generation, pitch change, mixing, or added effects were applied.
+Only a time excerpt was selected and copied in MP3 format for web playback.

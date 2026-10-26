@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estúdio Canvas Completo • Honda XRE 190 2018</title>
+  <style>
+    :root {
+      --bg: #ece8df;
+      --card: #fffdf8;
+      --border: #ded7c9;
+      --red: #c8222a;
+      --red-hover: #a91c23;
+      --amber: #d6a64b;
+      --green: #19745d;
+      --cyan: #2e6577;
+      --text: #172033;
+      --muted: #657080;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--red);
+      border-radius: 16px;
+      padding: 18px 24px;
+      margin-bottom: 22px;
+    }
+    .topbar h1 {
+      margin: 0 0 4px;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+    .topbar p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.92rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-red { background: var(--red); color: #fff; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-cyan { background: #0284c7; color: #fff; }
+    .btn-amber { background: var(--amber); color: #000; font-weight: 900; }
+    .btn-outline { background: #fff; color: #172033; border-color: var(--border); }
+
+    /* CONTROLES GERAIS */
+    .controls-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 22px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .field input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #172033;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    /* SELETOR DE ABAS DO ESTÚDIO */
+    .studio-tabs {
+      display: flex;
+      gap: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 8px;
+      margin-bottom: 22px;
+      overflow-x: auto;
+    }
+    .tab-trigger {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .tab-trigger.active {
+      background: var(--red);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+    }
+
+    .studio-panel {
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+    .studio-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* LAYOUT DE CARDS DO CANVAS */
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 24px;
+      align-items: start;
+    }
+    @media (max-width: 980px) {
+      .canvas-layout { grid-template-columns: 1fr; }
+    }
+    .canvas-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      background: #f4f0e8;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid #ded7c9;
+    }
+    canvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 16px 40px rgba(38, 43, 51, 0.14);
+      background: #fffdf8;
+    }
+    #storyCanvas, #motionCanvas { max-height: 600px; width: auto; }
+    #feedCanvas { max-height: 600px; width: auto; }
+    #posterA4Canvas { max-height: 600px; width: auto; }
+
+    .canvas-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .side-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .side-box h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .side-box ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* VÍDEO ANIMADO CONTROLES */
+    .video-recorder-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      background: #090d16;
+      border: 1px solid #334155;
+      padding: 14px 20px;
+      border-radius: 12px;
+      width: 100%;
+    }
+    .rec-status {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--cyan);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      display: inline-block;
+      animation: pulseDot 1s infinite;
+    }
+    @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(1.3); } }
+
+    /* SEÇÃO DE TEXTOS E CIDADES */
+    .copy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+    .copy-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .copy-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+    .copy-card textarea {
+      width: 100%;
+      min-height: 160px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #090d16;
+      color: #e2e8f0;
+      font-family: inherit;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--green);
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: none;
+      z-index: 9999;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    @media print {
+      body { background: #fff; color: #000; padding: 0; }
+      .topbar, .controls-card, .studio-tabs, .canvas-sidebar, .copy-grid, .video-recorder-bar, .action-buttons { display: none !important; }
+      .canvas-layout { display: block; border: none; padding: 0; background: transparent; }
+      .canvas-display { background: transparent; border: none; padding: 0; }
+      #posterA4Canvas { max-width: 100%; height: auto; box-shadow: none; border: none; }
+    }
+    .topbar,
+    .controls-card,
+    .studio-tabs,
+    .canvas-layout,
+    .copy-card {
+      box-shadow: 0 14px 36px rgba(38, 43, 51, 0.08);
+    }
+    .tab-trigger.active { box-shadow: none; }
+    .side-box p,
+    .side-box code { color: #596474 !important; }
+    textarea { background: #fff !important; color: #293244 !important; border-color: #ded7c9 !important; }
+    .tab-trigger[data-target="panel-video"],
+    #panel-video { display: none !important; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Topo -->
+    <header class="topbar">
+      <div>
+        <h1>🎨 Estúdio Canvas Pro • Honda XRE 190 2018</h1>
+        <p>Artes claras para Instagram e impressão A4, com moto, capacete e informações verificáveis.</p>
+      </div>
+      <div class="nav-links">
+        <a class="btn btn-outline" href="admin.html">⬅ Painel Administrativo</a>
+        <a class="btn btn-outline" href="index.html" target="_blank">🔗 Página de Vendas</a>
+      </div>
+    </header>
+
+    <!-- Barra de Configuração Dinâmica -->
+    <section class="controls-card" aria-label="Personalizar dados do cartaz">
+      <div class="field">
+        <label for="inpTitle">Título da Ação</label>
+        <input id="inpTitle" type="text" value="HONDA XRE 190 2018" />
+      </div>
+      <div class="field">
+        <label for="inpPrice">Preço Individual</label>
+        <input id="inpPrice" type="text" value="APENAS R$ 20,00" />
+      </div>
+      <div class="field">
+        <label for="inpCombos">Combos Promocionais</label>
+        <input id="inpCombos" type="text" value="3 por R$ 50 • 6 por R$ 100 • 10 por R$ 170" />
+      </div>
+      <div class="field">
+        <label for="inpDraw">Data do Sorteio</label>
+        <input id="inpDraw" type="text" value="SORTEIO 31/12 • LOTERIA FEDERAL" />
+      </div>
+      <div class="field">
+        <label for="inpPhone">WhatsApp Oficial</label>
+        <input id="inpPhone" type="text" value="(22) 99283-9362" />
+      </div>
+      <div class="field">
+        <label for="inpPix">Chave Pix (Welington Santos)</label>
+        <input id="inpPix" type="text" value="22992836392" />
+      </div>
+      <div>
+        <button type="button" class="btn btn-red" id="btnRedrawAll" style="width:100%">🔄 Atualizar Todos</button>
+      </div>
+    </section>
+
+    <!-- Navegação de Abas do Estúdio -->
+    <nav class="studio-tabs" aria-label="Formatos do Estúdio">
+      <button type="button" class="tab-trigger active" data-target="panel-stories">📱 1. Instagram Stories / Reels (1080×1920)</button>
+      <button type="button" class="tab-trigger" data-target="panel-feed">🖼️ 2. Instagram Retrato (1080×1350)</button>
+      <button type="button" class="tab-trigger" data-target="panel-poster">📄 3. Pôster Folha A4 para Impressão</button>
+      <button type="button" class="tab-trigger" data-target="panel-video">🎬 4. Vídeo Animado Motion Reels (MP4/WebM)</button>
+    </nav>
+
+    <!-- ABA 1: STORIES 1080x1920 -->
+    <section class="studio-panel active" id="panel-stories">
+      <div class="canvas-layout">
+        <div class="canvas-display">
+          <canvas id="storyCanvas" width="1080" height="1920"></canvas>
+          <div class="action-buttons" style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-red" id="dlStoryBtn">⬇ Baixar Stories PNG (1080×1920)</button>
+          </div>
+        </div>
+        <aside class="canvas-sidebar">
+          <div class="side-box">
+            <h3>📱 Stories &amp; Reels</h3>
+            <ul>
+              <li><strong>Resolução:</strong> 1080 × 1920 px (Proporção 9:16).</li>
+              <li><strong>Combos Visuais:</strong> 3 por R$ 50 | 6 por R$ 100 | 10 por R$ 170.</li>
+              <li><strong>Figurinha de Link:</strong> Espaço livre no rodapé para colar a figurinha de link do Instagram.</li>
+            </ul>
+          </div>
+          <div class="side-box">
+            <h3>🔥 Dica de Venda</h3>
+            <p style="font-size:0.86rem;margin:0;">Use a figurinha de link apontando para <code data-public-site-url></code>. Divulgue com frequência realista, sem urgência artificial.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ABA 2: FEED 1080x1080 -->
+    <section class="studio-panel" id="panel-feed">
+      <div class="canvas-layout">
+        <div class="canvas-display">
+          <canvas id="feedCanvas" width="1080" height="1350"></canvas>
+          <div class="action-buttons" style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-red" id="dlFeedBtn">⬇ Baixar Retrato PNG (1080×1350)</button>
+          </div>
+        </div>
+        <aside class="canvas-sidebar">
+          <div class="side-box">
+            <h3>🖼️ Feed &amp; WhatsApp</h3>
+            <ul>
+              <li><strong>Resolução:</strong> 1080 × 1350 px (Retrato 4:5 recomendado pelo Instagram).</li>
+              <li><strong>Ideal para:</strong> Grade do Instagram, Grupos de WhatsApp e Facebook.</li>
+              <li><strong>Destaque dos Combos:</strong> 1 cota R$ 20 • 3 cotas R$ 50 • 6 cotas R$ 100 • 10 cotas R$ 170.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ABA 3: PÔSTER FOLHA A4 PARA IMPRESSÃO -->
+    <section class="studio-panel" id="panel-poster">
+      <div class="canvas-layout">
+        <div class="canvas-display">
+          <canvas id="posterA4Canvas" width="2480" height="3508"></canvas>
+          <div class="action-buttons" style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-amber" id="btnPrintA4">🖨️ Imprimir Folha A4 Agora</button>
+            <button type="button" class="btn btn-red" id="dlPosterA4Btn">⬇ Baixar Pôster A4 em Alta Resolução (PNG)</button>
+          </div>
+        </div>
+        <aside class="canvas-sidebar">
+          <div class="side-box">
+            <h3>🖨️ Pôster Físico Folha A4</h3>
+            <ul>
+              <li><strong>Resolução:</strong> 2480 × 3508 pixels a 300 DPI (Qualidade Gráfica de Impressão).</li>
+              <li><strong>QR Code Gigante:</strong> Permite que qualquer pessoa aponte a câmera do celular e compre em 5 segundos.</li>
+              <li><strong>Onde Colar:</strong> Oficinas de moto, lava-jatos, postos de combustível, borracharias e bares de Carmo, Além Paraíba e Pádua.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ABA 4: VÍDEO ANIMADO MOTION REELS -->
+    <section class="studio-panel" id="panel-video">
+      <div class="canvas-layout">
+        <div class="canvas-display">
+          <canvas id="motionCanvas" width="1080" height="1920"></canvas>
+          <div class="video-recorder-bar">
+            <span class="rec-status" id="recStatus"><span class="pulse-dot"></span> Animação 30 FPS Ativa</span>
+            <button type="button" class="btn btn-cyan" id="btnToggleAnim">⏸ Pausar / Continuar</button>
+            <button type="button" class="btn btn-red" id="btnRecordVideo">🔴 Gravar Vídeo de 6s para Reels (Baixar WebM/MP4)</button>
+          </div>
+        </div>
+        <aside class="canvas-sidebar">
+          <div class="side-box">
+            <h3>🎬 Vídeo Motion Reels / Stories</h3>
+            <ul>
+              <li><strong>Animação ao Vivo:</strong> Feixes de luz dinâmicos, zoom suave (Ken Burns) e tacômetro acelerando de 0 a 190 km/h.</li>
+              <li><strong>Gravação Direta:</strong> Usa a tecnologia <code>canvas.captureStream()</code> do seu navegador para gerar o arquivo de vídeo pronto sem precisar de outro app!</li>
+              <li><strong>Tamanho do Vídeo:</strong> 1080 × 1920 px ideal para Instagram Reels, TikTok e WhatsApp Status.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Seção de Textos e Cidades -->
+    <section class="copy-grid">
+      <div class="copy-card">
+        <h3>📝 Legenda Pronta com Combos (Instagram &amp; WhatsApp)</h3>
+        <textarea id="txtCaption" readonly>🏍️ AÇÃO ENTRE AMIGOS — HONDA XRE 190 2018 + CAPACETE
+
+Participe a partir de R$ 20 por cota. Escolha seus números, pague por Pix e envie o comprovante para confirmação.
+
+🎟️ COMBOS PROMOCIONAIS COM DESCONTO:
+• 1 Cota = R$ 20,00
+• 3 Cotas = R$ 50,00 (Economize R$ 10!)
+• 6 Cotas = R$ 100,00 (Economize R$ 20!)
+• 10 Cotas = R$ 170,00 (Economize R$ 30!)
+
+✅ Numeração: 0000 a 9999 (Escolha seu número ou use a Surpresinha +1, +5, +10!)
+✅ Sorteio: 31/12 pela Loteria Federal
+🔴 Transmissão pelo YouTube: confira o horário e as regras no site.
+🔒 Seus dados são usados para identificar e confirmar a reserva.
+
+👉 GARANTA SUA COTA AGORA NO LINK DA BIO:
+__PUBLIC_SITE_URL__
+
+💳 Chave Pix: 22992836392 (Welington Santos - Carmo/RJ)
+📲 WhatsApp Oficial: (22) 99283-9362
+
+#HondaXRE190 #XRE190 #AcaoEntreAmigos #CarmoRJ #NovaFriburgo #Teresopolis #Petropolis #SantoAntonioDePadua #Itaperuna #AlemParaiba #LeopoldinaMG #CataguasesMG #MuriaeMG #CamposDosGoytacazes #Macae #RegiaoSerranaRJ</textarea>
+        <button type="button" class="btn btn-red" onclick="copyBox('txtCaption')">📋 Copiar Legenda do Instagram</button>
+      </div>
+
+      <div class="copy-card">
+        <h3>📍 Cidades-Alvo para Focar a Divulgação (RJ &amp; MG)</h3>
+        <textarea id="txtCities" readonly>🎯 POLO 1 — REGIÃO SERRANA E CENTRO-SUL RJ (Altíssima conversão + vizinhança de Carmo-RJ):
+• Carmo, Cantagalo, Cordeiro, Macuco, Sumidouro, Sapucaia, Duas Barras, Bom Jardim
+• Nova Friburgo, Teresópolis, Petrópolis, Três Rios, Paraíba do Sul
+
+🎯 POLO 2 — NOROESTE E NORTE FLUMINENSE (Mesmo DDD 22 — confiança imediata):
+• Santo Antônio de Pádua, Itaocara, Aperibé, Miracema, São Fidélis
+• Itaperuna, Campos dos Goytacazes, Macaé, Rio das Ostras
+
+🎯 POLO 3 — ZONA DA MATA MINEIRA (Divisa imediata com Carmo-RJ):
+• Além Paraíba, Volta Grande, Pirapetinga, Estrela Dalva
+• Leopoldina, Cataguases, Muriaé, Ubá, Juiz de Fora
+
+💡 DICA DE OURO META ADS:
+Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para não tomar bloqueio da palavra 'rifa', direcionando para o WhatsApp (22) 99283-9362 ou Link da Bio!</textarea>
+        <button type="button" class="btn btn-outline" onclick="copyBox('txtCities')">📋 Copiar Lista de Cidades-Alvo</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast">Copiado com sucesso!</div>
+
+  <script>
+    const PUBLIC_SITE_URL = "https://lemgruberpix-arch.github.io/acaoentreamigos/";
+    document.querySelectorAll("[data-public-site-url]").forEach((el) => { el.textContent = PUBLIC_SITE_URL; });
+    const captionBox = document.getElementById("txtCaption");
+    if (captionBox) captionBox.value = captionBox.value.replace("__PUBLIC_SITE_URL__", PUBLIC_SITE_URL);
+
+    // Carregamento da imagem local da Honda XRE 190
+    const heroImg = new Image();
+    heroImg.src = "assets/xre190-hero.jpg";
+    heroImg.onload = () => { renderAllStaticCanvases(); startMotionAnimation(); };
+    heroImg.onerror = () => { renderAllStaticCanvases(); startMotionAnimation(); };
+    const helmetImg = new Image();
+    helmetImg.src = "assets/capacete-premio.jpg";
+    helmetImg.onload = () => renderAllStaticCanvases();
+    const qrImg = new Image();
+    qrImg.src = "assets/qrcode-rifa.png";
+    qrImg.onload = () => renderAllStaticCanvases();
+
+    // Abas
+    document.querySelectorAll(".tab-trigger").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-trigger").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".studio-panel").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.getAttribute("data-target")).classList.add("active");
+      });
+    });
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function drawCoverImage(ctx, img, x, y, w, h, radius) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+      ctx.clip();
+      if (img && img.complete && img.naturalWidth > 0) {
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        const boxRatio = w / h;
+        let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight;
+        if (imgRatio > boxRatio) {
+          sw = img.naturalHeight * boxRatio;
+          sx = (img.naturalWidth - sw) / 2;
+        } else {
+          sh = img.naturalWidth / boxRatio;
+          sy = (img.naturalHeight - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+      } else {
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(x, y, w, h);
+      }
+      ctx.restore();
+    }
+
+    // Usa o QR real gerado para PUBLIC_SITE_URL; nunca desenha um padrão fictício.
+    function drawVectorQrCode(ctx, x, y, size) {
+      ctx.save();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x, y, size, size);
+      if (qrImg.complete && qrImg.naturalWidth > 0) {
+        ctx.drawImage(qrImg, x, y, size, size);
+      } else {
+        ctx.strokeStyle = "#cfc7ba";
+        ctx.lineWidth = Math.max(4, size * 0.02);
+        ctx.strokeRect(x, y, size, size);
+        ctx.fillStyle = "#657080";
+        ctx.font = `700 ${Math.max(20, size * 0.07)}px Arial`;
+        ctx.textAlign = "center";
+        ctx.fillText("QR carregando", x + size / 2, y + size / 2);
+      }
+      ctx.restore();
+    }
+
+    // 1. RENDER STORIES (1080x1920)
+    function renderStoryCanvas() {
+      const c = document.getElementById("storyCanvas");
+      const ctx = c.getContext("2d");
+      const W = 1080, H = 1920;
+
+      const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
+      const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
+      const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
+      const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
+      const pix = document.getElementById("inpPix").value || "22992836392";
+
+      // Background
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+      bgGrad.addColorStop(0, "#090d16");
+      bgGrad.addColorStop(0.5, "#111827");
+      bgGrad.addColorStop(1, "#090d16");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Top Red Bar
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(0, 0, W, 22);
+
+      // Pill Ação
+      ctx.fillStyle = "rgba(220, 38, 38, 0.22)";
+      ctx.beginPath();
+      ctx.roundRect(190, 70, 700, 68, 34);
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#dc2626";
+      ctx.stroke();
+
+      ctx.fillStyle = "#fca5a5";
+      ctx.font = "900 32px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("🔥 AÇÃO ENTRE AMIGOS • CARMO/RJ 🔥", W / 2, 116);
+
+      // Título
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 76px Inter, sans-serif";
+      ctx.fillText(title, W / 2, 230);
+
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "700 32px Inter, sans-serif";
+      ctx.fillText("MOTO SEMINOVA IMPECÁVEL • PRONTA PARA RODAR", W / 2, 288);
+
+      // Foto
+      drawCoverImage(ctx, heroImg, 60, 325, 960, 640, 28);
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = "#dc2626";
+      ctx.strokeRect(60, 325, 960, 640);
+
+      // Selo Preço
+      ctx.fillStyle = "#dc2626";
+      ctx.beginPath();
+      ctx.roundRect(140, 915, 800, 110, 55);
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "#ffffff";
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 52px Inter, sans-serif";
+      ctx.fillText(price + " A COTA", W / 2, 990);
+
+      // COMBOS PROMOCIONAIS (DESTAQUE VISUAL ALMIR #504)
+      ctx.fillStyle = "#1e293b";
+      ctx.beginPath();
+      ctx.roundRect(60, 1050, 960, 150, 22);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#fbbf24";
+      ctx.stroke();
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "900 28px Inter, sans-serif";
+      ctx.fillText("🎟️ COMBOS PROMOCIONAIS COM DESCONTO", W / 2, 1095);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 30px Inter, sans-serif";
+      ctx.fillText("3 Cotas: R$ 50   |   6 Cotas: R$ 100   |   10 Cotas: R$ 170", W / 2, 1150);
+
+      // Sorteio
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.roundRect(60, 1225, 960, 200, 22);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#334155";
+      ctx.stroke();
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "900 36px Inter, sans-serif";
+      ctx.fillText("🏆 " + draw, W / 2, 1290);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 32px Inter, sans-serif";
+      ctx.fillText("🔴 TRANSMISSÃO AO VIVO NO YOUTUBE", W / 2, 1345);
+
+      ctx.fillStyle = "#cbd5e1";
+      ctx.font = "600 26px Inter, sans-serif";
+      ctx.fillText("Ganhador avisado na hora • Numeração de 0000 a 9999", W / 2, 1395);
+
+      // Contatos
+      ctx.fillStyle = "#1e293b";
+      ctx.beginPath();
+      ctx.roundRect(60, 1450, 960, 205, 22);
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#16a34a";
+      ctx.stroke();
+
+      ctx.fillStyle = "#4ade80";
+      ctx.font = "900 36px Inter, sans-serif";
+      ctx.fillText("📲 WhatsApp: " + phone, W / 2, 1515);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 34px Inter, sans-serif";
+      ctx.fillText("💳 Pix: " + pix + " (Welington Santos)", W / 2, 1572);
+
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "700 26px Inter, sans-serif";
+      ctx.fillText("Responsável: Welington Santos • Carmo/RJ", W / 2, 1622);
+
+      // Botão Rodapé
+      ctx.fillStyle = "#dc2626";
+      ctx.beginPath();
+      ctx.roundRect(60, 1685, 960, 170, 34);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 42px Inter, sans-serif";
+      ctx.fillText("👆 TOQUE NO LINK E ESCOLHA SUA COTA!", W / 2, 1755);
+
+      ctx.fillStyle = "#fecaca";
+      ctx.font = "700 30px monospace";
+      ctx.fillText(cleanSiteLabel(), W / 2, 1812);
+    }
+
+    // 2. RENDER FEED (1080x1080)
+    function renderFeedCanvas() {
+      const c = document.getElementById("feedCanvas");
+      const ctx = c.getContext("2d");
+      const W = 1080, H = 1080;
+
+      const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
+      const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
+      const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
+      const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
+      const pix = document.getElementById("inpPix").value || "22992836392";
+
+      ctx.fillStyle = "#090d16";
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(0, 0, W, 18);
+
+      ctx.fillStyle = "#fca5a5";
+      ctx.font = "800 26px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("🔥 AÇÃO ENTRE AMIGOS • WELINGTON SANTOS (CARMO/RJ) 🔥", W / 2, 60);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 60px Inter, sans-serif";
+      ctx.fillText(title, W / 2, 130);
+
+      drawCoverImage(ctx, heroImg, 50, 155, 980, 460, 20);
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "#dc2626";
+      ctx.strokeRect(50, 155, 980, 460);
+
+      // Selo Preço
+      ctx.fillStyle = "#dc2626";
+      ctx.beginPath();
+      ctx.roundRect(190, 570, 700, 88, 44);
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "#ffffff";
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 44px Inter, sans-serif";
+      ctx.fillText(price + " A COTA", W / 2, 630);
+
+      // Combos
+      ctx.fillStyle = "#1e293b";
+      ctx.beginPath();
+      ctx.roundRect(50, 680, 980, 110, 16);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#fbbf24";
+      ctx.stroke();
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "900 25px Inter, sans-serif";
+      ctx.fillText("COMBOS: 3 por R$ 50   •   6 por R$ 100   •   10 por R$ 170", W / 2, 725);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "700 24px Inter, sans-serif";
+      ctx.fillText("🏆 " + draw + " • TRANSMISSÃO AO VIVO NO YOUTUBE", W / 2, 765);
+
+      // Contatos
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.roundRect(50, 810, 980, 115, 16);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#16a34a";
+      ctx.stroke();
+
+      ctx.fillStyle = "#4ade80";
+      ctx.font = "900 30px Inter, sans-serif";
+      ctx.fillText("📲 WhatsApp: " + phone + "   |   💳 Pix: " + pix, W / 2, 858);
+
+      ctx.fillStyle = "#cbd5e1";
+      ctx.font = "700 24px Inter, sans-serif";
+      ctx.fillText("Escolha seu número (0000 a 9999) • Seu nome gravado na cota!", W / 2, 898);
+
+      // CTA
+      ctx.fillStyle = "#dc2626";
+      ctx.beginPath();
+      ctx.roundRect(50, 945, 980, 95, 18);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 32px Inter, sans-serif";
+      ctx.fillText("GARANTA SUA COTA: " + cleanSiteLabel(), W / 2, 1005);
+    }
+
+    // 3. RENDER PÔSTER A4 IMPRESSÃO FÍSICA (2480x3508 px a 300 DPI)
+    function renderPosterA4Canvas() {
+      const c = document.getElementById("posterA4Canvas");
+      const ctx = c.getContext("2d");
+      const W = 2480, H = 3508;
+
+      const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
+      const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
+      const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
+      const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
+      const pix = document.getElementById("inpPix").value || "22992836392";
+
+      // Fundo branco/off-white de alto contraste para economizar tinta e dar leitura nítida
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, W, H);
+
+      // Borda vermelha dupla de impressão
+      ctx.lineWidth = 24;
+      ctx.strokeStyle = "#dc2626";
+      ctx.strokeRect(50, 50, W - 100, H - 100);
+
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "#111827";
+      ctx.strokeRect(74, 74, W - 148, H - 148);
+
+      // Topo Cabeçalho
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(80, 80, W - 160, 220);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 78px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("AÇÃO ENTRE AMIGOS • CARMO / RJ", W / 2, 225);
+
+      // Título
+      ctx.fillStyle = "#111827";
+      ctx.font = "900 130px Inter, sans-serif";
+      ctx.fillText(title, W / 2, 440);
+
+      ctx.fillStyle = "#dc2626";
+      ctx.font = "800 62px Inter, sans-serif";
+      ctx.fillText("MOTO SEMINOVA IMPECÁVEL • PRONTA PARA TRANSFERIR!", W / 2, 530);
+
+      // Foto
+      drawCoverImage(ctx, heroImg, 120, 580, W - 240, 1300, 36);
+      ctx.lineWidth = 14;
+      ctx.strokeStyle = "#dc2626";
+      ctx.strokeRect(120, 580, W - 240, 1300);
+
+      // Faixa Preço
+      ctx.fillStyle = "#dc2626";
+      ctx.beginPath();
+      ctx.roundRect(240, 1810, W - 480, 210, 105);
+      ctx.fill();
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = "#111827";
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 108px Inter, sans-serif";
+      ctx.fillText(price + " A COTA!", W / 2, 1955);
+
+      // Caixa de Combos Promocionais
+      ctx.fillStyle = "#fef3c7";
+      ctx.beginPath();
+      ctx.roundRect(120, 2060, W - 240, 260, 32);
+      ctx.fill();
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "#d97706";
+      ctx.stroke();
+
+      ctx.fillStyle = "#b45309";
+      ctx.font = "900 58px Inter, sans-serif";
+      ctx.fillText("🎟️ COMBOS COM DESCONTO ESPECIAL 🎟️", W / 2, 2145);
+
+      ctx.fillStyle = "#1f2937";
+      ctx.font = "800 62px Inter, sans-serif";
+      ctx.fillText("3 Cotas: R$ 50   |   6 Cotas: R$ 100   |   10 Cotas: R$ 170", W / 2, 2250);
+
+      // Data e YouTube
+      ctx.fillStyle = "#111827";
+      ctx.beginPath();
+      ctx.roundRect(120, 2360, W - 240, 300, 32);
+      ctx.fill();
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "900 70px Inter, sans-serif";
+      ctx.fillText("🏆 " + draw, W / 2, 2470);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 60px Inter, sans-serif";
+      ctx.fillText("🔴 TRANSMISSÃO AO VIVO NO YOUTUBE", W / 2, 2560);
+
+      ctx.fillStyle = "#e2e8f0";
+      ctx.font = "700 48px Inter, sans-serif";
+      ctx.fillText("O ganhador é avisado na hora • Numeração 0000 a 9999", W / 2, 2630);
+
+      // Rodapé com QR Code Grande e Contatos
+      const qrSize = 440;
+      drawVectorQrCode(ctx, 160, 2730, qrSize);
+
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#dc2626";
+      ctx.font = "900 62px Inter, sans-serif";
+      ctx.fillText("📲 WHATSAPP: " + phone, 660, 2830);
+
+      ctx.fillStyle = "#111827";
+      ctx.font = "800 56px Inter, sans-serif";
+      ctx.fillText("💳 CHAVE PIX: " + pix, 660, 2920);
+
+      ctx.fillStyle = "#4b5563";
+      ctx.font = "700 46px Inter, sans-serif";
+      ctx.fillText("Titular: WELINGTON SANTOS (Carmo/RJ)", 660, 3000);
+
+      ctx.fillStyle = "#dc2626";
+      ctx.font = "900 52px Inter, sans-serif";
+      ctx.fillText(cleanSiteLabel(), 660, 3100);
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "700 38px Inter, sans-serif";
+      ctx.fillText("Aponte a câmera do seu celular no QR Code para escolher suas cotas agora!", W / 2, 3320);
+    }
+
+    // 4. MOTION CANVAS VÍDEO (REELS/STORIES 1080x1920 com gravação ao vivo)
+    let motionRunning = true;
+    let animFrameId = null;
+    let animStart = performance.now();
+
+    function drawMotionFrame(now) {
+      const c = document.getElementById("motionCanvas");
+      const ctx = c.getContext("2d");
+      const W = 1080, H = 1920;
+
+      const elapsed = (now - animStart) / 1000;
+      const speed = Math.min(190, Math.floor(((Math.sin(elapsed * 2) + 1) / 2) * 190));
+      const pulseScale = 1 + Math.sin(elapsed * 4) * 0.025;
+
+      // Fundo animado com gradiente escuro dinâmico
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, "#060910");
+      bgGrad.addColorStop(0.5, "#0f172a");
+      bgGrad.addColorStop(1, "#060910");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Partículas em movimento
+      ctx.fillStyle = "rgba(220, 38, 38, 0.35)";
+      for (let i = 0; i < 24; i++) {
+        const py = ((i * 85 + elapsed * 120) % H);
+        const px = (i * 47) % W;
+        ctx.beginPath();
+        ctx.arc(px, py, (i % 4) + 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Faixa Superior
+      ctx.fillStyle = "#dc2626";
+      ctx.fillRect(0, 0, W, 22);
+
+      // Tag topo
+      ctx.fillStyle = "rgba(220, 38, 38, 0.3)";
+      ctx.beginPath();
+      ctx.roundRect(190, 70, 700, 70, 35);
+      ctx.fill();
+      ctx.strokeStyle = "#dc2626";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = "#fca5a5";
+      ctx.font = "900 32px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("🔥 SORTEIO OFICIAL • CARMO/RJ 🔥", W / 2, 116);
+
+      // Título
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 78px Inter, sans-serif";
+      ctx.fillText("HONDA XRE 190", W / 2, 230);
+
+      // Foto com Ken Burns Zoom Dinâmico
+      ctx.save();
+      ctx.translate(W / 2, 640);
+      ctx.scale(pulseScale, pulseScale);
+      drawCoverImage(ctx, heroImg, -480, -320, 960, 640, 28);
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "#dc2626";
+      ctx.strokeRect(-480, -320, 960, 640);
+      ctx.restore();
+
+      // Tacômetro / Velocímetro Digital
+      ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+      ctx.beginPath();
+      ctx.roundRect(240, 990, 600, 100, 50);
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#38bdf8";
+      ctx.stroke();
+
+      ctx.fillStyle = "#38bdf8";
+      ctx.font = "900 48px monospace";
+      ctx.fillText("⚡ " + speed + " KM/H", W / 2, 1058);
+
+      // Selo de Preço Piscando em Neon
+      const glow = Math.abs(Math.sin(elapsed * 5));
+      ctx.fillStyle = `rgba(220, 38, 38, ${0.85 + glow * 0.15})`;
+      ctx.beginPath();
+      ctx.roundRect(140, 1120, 800, 120, 60);
+      ctx.fill();
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = glow > 0.5 ? "#fbbf24" : "#ffffff";
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 56px Inter, sans-serif";
+      ctx.fillText("APENAS R$ 20,00 A COTA", W / 2, 1200);
+
+      // Combos
+      ctx.fillStyle = "#1e293b";
+      ctx.beginPath();
+      ctx.roundRect(60, 1270, 960, 130, 20);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#fbbf24";
+      ctx.stroke();
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "900 28px Inter, sans-serif";
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 1345);
+
+      // Ao Vivo
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.roundRect(60, 1425, 960, 175, 20);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 34px Inter, sans-serif";
+      ctx.fillText("🏆 SORTEIO 31/12 • LOTERIA FEDERAL", W / 2, 1490);
+
+      ctx.fillStyle = "#ef4444";
+      ctx.font = "900 32px Inter, sans-serif";
+      ctx.fillText("🔴 TRANSMISSÃO AO VIVO NO YOUTUBE", W / 2, 1550);
+
+      // CTA Rodapé
+      ctx.fillStyle = "#dc2626";
+      ctx.beginPath();
+      ctx.roundRect(60, 1630, 960, 210, 36);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 46px Inter, sans-serif";
+      ctx.fillText("👆 TOQUE NO LINK DA BIO!", W / 2, 1715);
+
+      ctx.fillStyle = "#fecaca";
+      ctx.font = "700 32px monospace";
+      ctx.fillText(cleanSiteLabel(), W / 2, 1780);
+
+      if (motionRunning) {
+        animFrameId = requestAnimationFrame(drawMotionFrame);
+      }
+    }
+
+    function startMotionAnimation() {
+      if (!animFrameId) {
+        motionRunning = true;
+        animStart = performance.now();
+        animFrameId = requestAnimationFrame(drawMotionFrame);
+      }
+    }
+
+    document.getElementById("btnToggleAnim").addEventListener("click", () => {
+      motionRunning = !motionRunning;
+      if (motionRunning) {
+        animFrameId = requestAnimationFrame(drawMotionFrame);
+        document.getElementById("recStatus").innerHTML = '<span class="pulse-dot"></span> Animação 30 FPS Ativa';
+      } else {
+        cancelAnimationFrame(animFrameId);
+        animFrameId = null;
+        document.getElementById("recStatus").textContent = "⏸ Animação Pausada";
+      }
+    });
+
+    // GRAVAÇÃO DE VÍDEO DO CANVAS DIRETO NO NAVEGADOR
+    document.getElementById("btnRecordVideo").addEventListener("click", () => {
+      const canvas = document.getElementById("motionCanvas");
+      const stream = canvas.captureStream(30);
+      let recorder;
+      try {
+        recorder = new MediaRecorder(stream, { mimeType: "video/webm;codecs=vp9" });
+      } catch (e) {
+        try {
+          recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+        } catch (e2) {
+          recorder = new MediaRecorder(stream);
+        }
+      }
+
+      const chunks = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: recorder.mimeType || "video/webm" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "reels-honda-xre190-animado.webm";
+        a.click();
+        document.getElementById("recStatus").innerHTML = '<span class="pulse-dot"></span> Gravação Concluída!';
+        setTimeout(() => {
+          document.getElementById("recStatus").innerHTML = '<span class="pulse-dot"></span> Animação 30 FPS Ativa';
+        }, 3000);
+      };
+
+      recorder.start();
+      document.getElementById("recStatus").textContent = "🔴 Gravando vídeo de 6 segundos... Aguarde!";
+      setTimeout(() => {
+        recorder.stop();
+      }, 6000);
+    });
+
+    // Segunda passagem visual: "Luz de Estrada" — clara, editorial e sem cores pesadas.
+    function lightCard(ctx, x, y, w, h, radius, fill, stroke) {
+      ctx.save();
+      roundRect(ctx, x, y, w, h, radius);
+      ctx.fillStyle = fill || "#ffffff";
+      ctx.fill();
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = Math.max(2, w * 0.003);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawContainImage(ctx, img, x, y, w, h) {
+      ctx.save();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x, y, w, h);
+      if (img && img.complete && img.naturalWidth > 0) {
+        const scale = Math.min(w / img.naturalWidth, h / img.naturalHeight);
+        const dw = img.naturalWidth * scale;
+        const dh = img.naturalHeight * scale;
+        ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+      }
+      ctx.restore();
+    }
+
+    function cleanSiteLabel() {
+      return PUBLIC_SITE_URL.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    }
+
+    function renderStoryCanvas() {
+      const c = document.getElementById("storyCanvas");
+      const ctx = c.getContext("2d");
+      const W = 1080, H = 1920;
+      const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
+      const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
+      const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
+      const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
+
+      ctx.fillStyle = "#f7f3eb";
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#c8222a";
+      ctx.fillRect(0, 0, 22, H);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#657080";
+      ctx.font = "800 28px Arial";
+      ctx.fillText("AÇÃO ENTRE AMIGOS • CARMO/RJ", 74, 92);
+      ctx.fillStyle = "#172033";
+      ctx.font = "900 72px Arial";
+      ctx.fillText(title, 72, 180);
+      ctx.fillStyle = "#c8222a";
+      ctx.font = "900 42px Arial";
+      ctx.fillText("MOTO + CAPACETE", 74, 244);
+
+      lightCard(ctx, 64, 292, 952, 760, 34, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, heroImg, 86, 318, 908, 548);
+      lightCard(ctx, 724, 790, 250, 232, 26, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, helmetImg, 744, 808, 210, 178);
+      ctx.fillStyle = "#657080";
+      ctx.font = "700 22px Arial";
+      ctx.fillText("Imagens ilustrativas", 92, 1012);
+
+      lightCard(ctx, 64, 1090, 952, 156, 32, "#c8222a");
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 58px Arial";
+      ctx.fillText(price + " A COTA", W / 2, 1188);
+
+      lightCard(ctx, 64, 1276, 952, 180, 28, "#fffdf8", "#ded7c9");
+      ctx.fillStyle = "#172033";
+      ctx.font = "900 30px Arial";
+      ctx.fillText("COMBOS", W / 2, 1332);
+      ctx.font = "800 31px Arial";
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 1394);
+
+      ctx.fillStyle = "#172033";
+      ctx.font = "900 34px Arial";
+      ctx.fillText(draw, W / 2, 1522);
+      ctx.fillStyle = "#657080";
+      ctx.font = "700 27px Arial";
+      ctx.fillText("Escolha seus números • Pix • Envie o comprovante", W / 2, 1572);
+
+      drawVectorQrCode(ctx, 76, 1640, 210);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#c8222a";
+      ctx.font = "900 34px Arial";
+      ctx.fillText("ESCOLHA SUA COTA", 322, 1706);
+      ctx.fillStyle = "#172033";
+      ctx.font = "800 26px Arial";
+      ctx.fillText(cleanSiteLabel(), 322, 1753);
+      ctx.fillStyle = "#657080";
+      ctx.font = "700 25px Arial";
+      ctx.fillText("WhatsApp: " + phone, 322, 1800);
+      ctx.font = "600 21px Arial";
+      ctx.fillText("Responsável: Welington Santos", 322, 1840);
+    }
+
+    function renderFeedCanvas() {
+      const c = document.getElementById("feedCanvas");
+      c.width = 1080;
+      c.height = 1350;
+      const ctx = c.getContext("2d");
+      const W = 1080;
+      const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
+      const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
+
+      ctx.fillStyle = "#f7f3eb";
+      ctx.fillRect(0, 0, W, 1350);
+      ctx.fillStyle = "#c8222a";
+      ctx.fillRect(0, 0, W, 18);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#657080";
+      ctx.font = "800 25px Arial";
+      ctx.fillText("AÇÃO ENTRE AMIGOS • CARMO/RJ", W / 2, 66);
+      ctx.fillStyle = "#172033";
+      ctx.font = "900 60px Arial";
+      ctx.fillText(title, W / 2, 142);
+      ctx.fillStyle = "#c8222a";
+      ctx.font = "900 32px Arial";
+      ctx.fillText("MOTO + CAPACETE", W / 2, 194);
+
+      lightCard(ctx, 50, 232, 980, 590, 30, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, heroImg, 78, 258, 760, 512);
+      lightCard(ctx, 802, 542, 194, 236, 22, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, helmetImg, 816, 558, 166, 188);
+
+      lightCard(ctx, 70, 850, 940, 126, 28, "#c8222a");
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 48px Arial";
+      ctx.fillText("R$ 20 A COTA", W / 2, 930);
+      ctx.fillStyle = "#172033";
+      ctx.font = "800 27px Arial";
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 1038);
+      ctx.font = "900 29px Arial";
+      ctx.fillText("SORTEIO 31/12 • LOTERIA FEDERAL", W / 2, 1092);
+
+      drawVectorQrCode(ctx, 74, 1132, 156);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#c8222a";
+      ctx.font = "900 29px Arial";
+      ctx.fillText("ESCOLHA SUA COTA", 264, 1184);
+      ctx.fillStyle = "#172033";
+      ctx.font = "800 22px Arial";
+      ctx.fillText(cleanSiteLabel(), 264, 1228);
+      ctx.fillStyle = "#657080";
+      ctx.font = "700 21px Arial";
+      ctx.fillText("WhatsApp: " + phone + " • Imagens ilustrativas", 264, 1270);
+    }
+
+    function renderPosterA4Canvas() {
+      const c = document.getElementById("posterA4Canvas");
+      const ctx = c.getContext("2d");
+      const W = 2480, H = 3508;
+      const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
+      const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
+      const pix = document.getElementById("inpPix").value || "22992836392";
+
+      ctx.fillStyle = "#fffdf8";
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#c8222a";
+      ctx.fillRect(0, 0, 34, H);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#657080";
+      ctx.font = "800 56px Arial";
+      ctx.fillText("AÇÃO ENTRE AMIGOS • CARMO/RJ", 160, 190);
+      ctx.fillStyle = "#172033";
+      ctx.font = "900 142px Arial";
+      ctx.fillText(title, 150, 370);
+      ctx.fillStyle = "#c8222a";
+      ctx.font = "900 74px Arial";
+      ctx.fillText("MOTO + CAPACETE", 155, 478);
+
+      lightCard(ctx, 140, 560, 2200, 1420, 52, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, heroImg, 200, 620, 1730, 1210);
+      lightCard(ctx, 1800, 1390, 450, 500, 42, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, helmetImg, 1840, 1430, 370, 400);
+      ctx.fillStyle = "#657080";
+      ctx.font = "600 42px Arial";
+      ctx.fillText("Imagens ilustrativas", 220, 1918);
+
+      lightCard(ctx, 250, 2050, 1980, 250, 110, "#c8222a");
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 112px Arial";
+      ctx.fillText("R$ 20 A COTA", W / 2, 2215);
+
+      ctx.fillStyle = "#172033";
+      ctx.font = "900 61px Arial";
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 2445);
+      ctx.font = "900 70px Arial";
+      ctx.fillText("SORTEIO 31/12 • LOTERIA FEDERAL", W / 2, 2570);
+      ctx.fillStyle = "#657080";
+      ctx.font = "700 48px Arial";
+      ctx.fillText("Escolha o número • Pague por Pix • Envie o comprovante", W / 2, 2655);
+
+      drawVectorQrCode(ctx, 170, 2780, 500);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#c8222a";
+      ctx.font = "900 72px Arial";
+      ctx.fillText("APONTE A CÂMERA", 760, 2870);
+      ctx.fillStyle = "#172033";
+      ctx.font = "800 50px Arial";
+      ctx.fillText(cleanSiteLabel(), 760, 2960);
+      ctx.font = "800 48px Arial";
+      ctx.fillText("WhatsApp: " + phone, 760, 3055);
+      ctx.fillText("Pix: " + pix + " • Welington Santos", 760, 3140);
+      ctx.fillStyle = "#657080";
+      ctx.font = "600 40px Arial";
+      ctx.fillText("Prêmio e documentação: confirme os detalhes com o responsável.", 760, 3225);
+      ctx.textAlign = "center";
+      ctx.font = "600 36px Arial";
+      ctx.fillText("A participação pressupõe pagamento confirmado e observância das regras da ação.", W / 2, 3400);
+    }
+
+    function renderAllStaticCanvases() {
+      renderStoryCanvas();
+      renderFeedCanvas();
+      renderPosterA4Canvas();
+    }
+
+    document.getElementById("btnRedrawAll").addEventListener("click", () => {
+      renderAllStaticCanvases();
+    });
+
+    ["inpTitle", "inpPrice", "inpCombos", "inpDraw", "inpPhone", "inpPix"].forEach(id => {
+      document.getElementById(id).addEventListener("input", renderAllStaticCanvases);
+    });
+
+    function downloadCanvas(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    document.getElementById("dlStoryBtn").addEventListener("click", () => downloadCanvas("storyCanvas", "instagram-story-xre190.png"));
+    document.getElementById("dlFeedBtn").addEventListener("click", () => downloadCanvas("feedCanvas", "instagram-retrato-xre190.png"));
+    document.getElementById("dlPosterA4Btn").addEventListener("click", () => downloadCanvas("posterA4Canvas", "poster-a4-impressao-xre190.png"));
+    document.getElementById("btnPrintA4").addEventListener("click", () => window.print());
+
+    function copyBox(id) {
+      const el = document.getElementById(id);
+      navigator.clipboard.writeText(el.value);
+      const t = document.getElementById("toast");
+      t.style.display = "block";
+      setTimeout(() => { t.style.display = "none"; }, 2200);
+    }
+  </script>
+</body>
+</html>
