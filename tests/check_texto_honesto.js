@@ -57,4 +57,6 @@ ok(/4 últimos dígitos do 1º prêmio/.test(idx) && /4 últimos dígitos do 1º
 ok(/R\$ 20\.000/.test(reg) && /escolhe/.test(reg), 'regulamento traz a opcao de R$ 20 mil no Pix e a escolha do ganhador');
 ok(!/autorizad[oa] (pel|pelo|pela)|n[úu]mero de autoriza/i.test(reg), 'regulamento NUNCA afirma autorizacao oficial');
 
+ok(/até 5 \(cinco\) dias/.test(reg) && /sem ônus/.test(reg) && /nome, imagem e voz/.test(reg), 'regulamento: prazo de 5 dias para a escolha e autorizacao de imagem sem onus');
+
 console.log('PASS: honest text verified (' + checks + ' checks).');
