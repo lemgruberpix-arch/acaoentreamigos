@@ -10,6 +10,7 @@
  * - Inicialização em lotes (batch chunks de 1.000 linhas) para evitar timeout.
  * - Concorrência segura via LockService (waitLock até 30s).
  * - Privacidade pública: action 'listar' remove nomes e telefones (PII sanitizado).
+ * - Resultado do sorteio: 'registrarResultado' (admin, só POST, write-once) e 'resultado' (público, sem dados pessoais).
  ******************************************************/
 
 const SHEET_NAME = 'Numeros';
@@ -73,6 +74,14 @@ function doPost(e) {
 
 function handleRequest_(e) {
   try {
+    // Senha e códigos nunca na URL (a URL fica em registros e no histórico): recusa em GET e em POST.
+    if (e && e.parameter) {
+      ['token', 'adminToken', 'novaSenha', 'codigoPlanilha'].forEach(function (chave) {
+        if (Object.prototype.hasOwnProperty.call(e.parameter, chave)) {
+          throw new Error('Senha e códigos não podem ir na URL. Use o painel.');
+        }
+      });
+    }
     const payload = parsePayload_(e);
     // Definido no servidor (sobrescreve qualquer valor do cliente): ações admin só via POST, nunca na URL.
     payload.__viaPost = Boolean(e && e.postData && e.postData.contents);
@@ -124,6 +133,27 @@ function handleRequest_(e) {
       return json_(atualizarStatus_(payload));
     }
 
+    if (action === 'trocarSenha') {
+      requireAdmin_(payload);
+      return json_(trocarSenha_(payload));
+    }
+
+    // Primeiro acesso: só funciona enquanto NÃO existe ADMIN_TOKEN e exige o código da planilha (o dono o tem na URL dela).
+    if (action === 'definirSenhaInicial') {
+      return json_(definirSenhaInicial_(payload));
+    }
+
+    // Pública (GET e POST): devolve só o resultado oficial, sem nenhum dado pessoal.
+    if (action === 'resultado') {
+      return json_(resultadoPublico_());
+    }
+
+    // Administrativa (só POST + senha, mesma trava de tentativas das demais).
+    if (action === 'registrarResultado') {
+      requireAdmin_(payload);
+      return json_(registrarResultado_(payload));
+    }
+
     if (action === 'inicializar') {
       requireAdmin_(payload);
       const prefillAll = payload.prefillAll === true || payload.prefillAll === 'true';
@@ -157,17 +187,91 @@ function sameText_(a, b) {
 function requireAdmin_(payload) {
   if (!payload.__viaPost) throw new Error('Ações administrativas só por POST.');
   if (!ADMIN_EXIGE_SENHA) return;
-  const cache = CacheService.getScriptCache();
-  const falhas = Number(cache.get(ADMIN_CHAVE_FALHAS) || 0);
-  if (falhas >= ADMIN_MAX_FALHAS) {
-    throw new Error('Muitas tentativas erradas. Aguarde ' + Math.round(ADMIN_BLOQUEIO_SEG / 60) + ' minutos e tente de novo.');
+  // Conferir a senha e contar o erro é uma operação só: sob trava, pedidos simultâneos não subcontam as falhas.
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const cache = CacheService.getScriptCache();
+    const falhas = Number(cache.get(ADMIN_CHAVE_FALHAS) || 0);
+    if (falhas >= ADMIN_MAX_FALHAS) {
+      throw new Error('Muitas tentativas erradas. Aguarde ' + Math.round(ADMIN_BLOQUEIO_SEG / 60) + ' minutos e tente de novo.');
+    }
+    const token = PropertiesService.getScriptProperties().getProperty('ADMIN_TOKEN');
+    if (!token || !sameText_(payload.token || payload.adminToken || '', token)) {
+      cache.put(ADMIN_CHAVE_FALHAS, String(falhas + 1), ADMIN_BLOQUEIO_SEG);
+      throw new Error('Não autorizado.');
+    }
+    if (falhas) cache.remove(ADMIN_CHAVE_FALHAS);
+  } finally {
+    lock.releaseLock();
   }
-  const token = PropertiesService.getScriptProperties().getProperty('ADMIN_TOKEN');
-  if (!token || !sameText_(payload.token || payload.adminToken || '', token)) {
-    cache.put(ADMIN_CHAVE_FALHAS, String(falhas + 1), ADMIN_BLOQUEIO_SEG);
-    throw new Error('Não autorizado.');
+}
+
+/**
+ * Troca a senha do painel (propriedade ADMIN_TOKEN). Exige a senha ATUAL (requireAdmin_ já conferiu) e nunca
+ * registra nem devolve o valor. Zera a contagem de erros. A nova senha vale na hora, sem nova implantação.
+ */
+function validarNovaSenha_(valor) {
+  const nova = String(valor === undefined || valor === null ? '' : valor);
+  if (nova.length < 6 || nova.length > 64) throw new Error('A nova senha precisa ter de 6 a 64 caracteres.');
+  if (/[\u0000-\u001f\u007f]/.test(nova) || nova !== nova.trim()) throw new Error('A nova senha não pode ter espaços nas pontas nem caracteres invisíveis.');
+  return nova;
+}
+
+function trocarSenha_(payload) {
+  const nova = validarNovaSenha_(payload.novaSenha);
+  const atual = String(payload.token || payload.adminToken || '');
+  if (sameText_(nova, atual)) throw new Error('A nova senha precisa ser diferente da atual.');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const cache = CacheService.getScriptCache();
+    const vigente = props.getProperty('ADMIN_TOKEN');
+    // Reconfere dentro da trava: se outra troca ja mudou a senha, esta (com a senha velha) e recusada e conta como erro.
+    if (!vigente || !sameText_(atual, vigente)) {
+      const falhas = Number(cache.get(ADMIN_CHAVE_FALHAS) || 0);
+      cache.put(ADMIN_CHAVE_FALHAS, String(falhas + 1), ADMIN_BLOQUEIO_SEG);
+      throw new Error('Não autorizado.');
+    }
+    props.setProperty('ADMIN_TOKEN', nova);
+    cache.remove(ADMIN_CHAVE_FALHAS);
+  } finally {
+    lock.releaseLock();
   }
-  if (falhas) cache.remove(ADMIN_CHAVE_FALHAS);
+  return { ok: true, message: 'Senha trocada. Use a nova senha daqui em diante.' };
+}
+
+/**
+ * Primeiro acesso: cria a senha do painel quando ainda NÃO existe ADMIN_TOKEN. Prova de dono = código da planilha
+ * (o trecho grande da URL dela, que não aparece em nenhum lugar público). Só POST, usa a MESMA trava de tentativas
+ * (8 erros = 10 min), nunca devolve nem registra a senha, e depois de criada esta ação deixa de funcionar.
+ */
+function definirSenhaInicial_(payload) {
+  if (!payload.__viaPost) throw new Error('Ações administrativas só por POST.');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const cache = CacheService.getScriptCache();
+    const falhas = Number(cache.get(ADMIN_CHAVE_FALHAS) || 0);
+    if (falhas >= ADMIN_MAX_FALHAS) {
+      throw new Error('Muitas tentativas erradas. Aguarde ' + Math.round(ADMIN_BLOQUEIO_SEG / 60) + ' minutos e tente de novo.');
+    }
+    const props = PropertiesService.getScriptProperties();
+    if (props.getProperty('ADMIN_TOKEN')) throw new Error('A senha já foi criada. Para trocar, use "Trocar senha" no painel.');
+    const codigo = String(payload.codigoPlanilha === undefined || payload.codigoPlanilha === null ? '' : payload.codigoPlanilha).trim();
+    const real = String(SpreadsheetApp.getActiveSpreadsheet().getId());
+    if (!codigo || !sameText_(codigo, real)) {
+      cache.put(ADMIN_CHAVE_FALHAS, String(falhas + 1), ADMIN_BLOQUEIO_SEG);
+      throw new Error('O código da planilha não confere.');
+    }
+    const nova = validarNovaSenha_(payload.novaSenha);
+    props.setProperty('ADMIN_TOKEN', nova);
+    cache.remove(ADMIN_CHAVE_FALHAS);
+  } finally {
+    lock.releaseLock();
+  }
+  return { ok: true, message: 'Senha criada. Entre com ela no painel.' };
 }
 
 /** Texto livre vindo do público: corta tamanho, remove controles e neutraliza fórmulas de planilha (=, +, -, @). */
@@ -516,22 +620,23 @@ function reservarNumeros_(payload) {
   }
 }
 
-/** Regras canônicas de pacotes (PACOTES_CENTAVOS): 10 por 170, 6 por 100, 3 por 50; sobra vale R$20. */
+/** Regras canônicas de pacotes (PACOTES_CENTAVOS): 10 por 170, 6 por 100, 3 por 50; sobra vale R$20. Cobra sempre o MENOR preço possível (ex.: 12 cotas = 6+6 = R$ 200, não 10+2 avulsas = R$ 210). */
 function calcularPrecoPromocional_(quantidade) {
   const qtd = Number(quantidade);
   if (!Number.isInteger(qtd) || qtd < 1) throw new Error('Quantidade de cotas inválida.');
 
-  let restante = qtd;
-  let totalCentavos = 0;
-  PACOTES_CENTAVOS.forEach(function (pacote) {
-    const grupos = Math.floor(restante / pacote[0]);
-    totalCentavos += grupos * pacote[1];
-    restante -= grupos * pacote[0];
-  });
-  totalCentavos += restante * VALOR_POR_NUMERO * 100;
+  const unitCentavos = VALOR_POR_NUMERO * 100;
+  const melhor = [0];
+  for (let n = 1; n <= qtd; n++) {
+    let custo = melhor[n - 1] + unitCentavos;
+    PACOTES_CENTAVOS.forEach(function (pacote) {
+      if (n >= pacote[0]) custo = Math.min(custo, melhor[n - pacote[0]] + pacote[1]);
+    });
+    melhor[n] = custo;
+  }
 
   const base = qtd * VALOR_POR_NUMERO;
-  const total = totalCentavos / 100;
+  const total = melhor[qtd] / 100;
   return { base: base, desconto: base - total, total: total };
 }
 
@@ -728,6 +833,219 @@ function atualizarStatus_(payload) {
     }
 
     return { ok: true, numero: numero, status: status, message: 'Status atualizado com sucesso.' };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/******************************************************
+ * RESULTADO DO SORTEIO
+ * Regra pública (a mesma que está no site): Loteria Federal (CAIXA). Vale o número formado pelos 4 últimos dígitos
+ * do 1º prêmio; se a cota não foi vendida, apura-se sucessivamente pelo 2º, 3º, 4º e 5º prêmios.
+ ******************************************************/
+const RESULTADO_SHEET_NAME = 'Resultado';
+const RESULTADO_COLS = [
+  'data_registro', 'data_extracao', 'premios', 'numero_vencedor', 'ordem_premio_usado', 'status_cota',
+  'tipo', 'apuracao', 'nome', 'whatsapp'
+];
+const RC = RESULTADO_COLS.reduce(function (acc, name, index) { acc[name] = index; return acc; }, {});
+const QTD_PREMIOS = 5;
+const MIN_DIGITOS_PREMIO = 4;
+const MAX_DIGITOS_PREMIO = 10;
+// DEFINIÇÃO DE "COTA VENDIDA": só o status 'pago' (pagamento confirmado) conta. 'reservado' (mesmo com comprovante
+// enviado e ainda não conferido) e 'livre' NÃO são vendidas e passam para o prêmio seguinte.
+const STATUS_COTA_VENDIDA = 'pago';
+const STATUS_SEM_GANHADOR = 'sem_ganhador_apuravel';
+
+/** Últimos 4 dígitos do prêmio como número de cota (0000 a 9999). Preserva zeros à esquerda ao formatar com formatCode_. */
+function cotaDoPremio_(premio) {
+  return Number(String(premio).slice(-4));
+}
+
+function validarPremios_(input) {
+  let lista = input;
+  if (typeof lista === 'string') {
+    try { lista = JSON.parse(lista); } catch (ignore) { lista = null; }
+  }
+  if (!Array.isArray(lista) || lista.length !== QTD_PREMIOS) {
+    throw new Error('Informe exatamente os ' + QTD_PREMIOS + ' prêmios da Loteria Federal.');
+  }
+  return lista.map(function (item, index) {
+    // Número do JSON perderia zeros à esquerda (ex.: o zero à esquerda se perderia): só texto é aceito.
+    if (typeof item !== 'string') throw new Error('O ' + (index + 1) + 'º prêmio deve ser enviado como texto, só com dígitos.');
+    const texto = item.trim();
+    if (!/^\d+$/.test(texto)) throw new Error('O ' + (index + 1) + 'º prêmio deve ter só dígitos (sem letras, espaços ou sinais).');
+    if (texto.length < MIN_DIGITOS_PREMIO) throw new Error('O ' + (index + 1) + 'º prêmio precisa ter pelo menos ' + MIN_DIGITOS_PREMIO + ' dígitos.');
+    if (texto.length > MAX_DIGITOS_PREMIO) throw new Error('O ' + (index + 1) + 'º prêmio tem dígitos demais.');
+    return texto;
+  });
+}
+
+function validarDataExtracao_(valor) {
+  const texto = String(valor === undefined || valor === null ? '' : valor).trim();
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(texto);
+  if (!m) throw new Error('Data da extração inválida. Use AAAA-MM-DD.');
+  const ano = Number(m[1]);
+  const mes = Number(m[2]);
+  const dia = Number(m[3]);
+  const d = new Date(Date.UTC(ano, mes - 1, dia));
+  if (ano < 2020 || d.getUTCFullYear() !== ano || d.getUTCMonth() !== mes - 1 || d.getUTCDate() !== dia) {
+    throw new Error('Data da extração inválida. Use AAAA-MM-DD.');
+  }
+  // Não aceita extração no futuro (1 dia de folga por fuso horário).
+  if (d.getTime() > Date.now() + 24 * 60 * 60 * 1000) throw new Error('A data da extração não pode ser futura.');
+  return texto;
+}
+
+const ORDEM_FECHAMENTO = 6; // 1..5 = prêmio usado; 6 = regra de fechamento (próxima cota vendida acima do 1º prêmio)
+
+/** Aplica a regra pública sobre as linhas da planilha de cotas. Não escreve nada. */
+function apurarVencedor_(premios, rows) {
+  const porNumero = {};
+  rows.forEach(function (item) {
+    if (!isValidNumero_(item.data.numero)) return;
+    const n = Number(item.data.numero);
+    // Se por algum motivo houver linha repetida, 'pago' prevalece.
+    if (!porNumero[n] || item.data.status === STATUS_COTA_VENDIDA) porNumero[n] = item;
+  });
+  const apuracao = [];
+  for (let i = 0; i < premios.length; i++) {
+    const numero = cotaDoPremio_(premios[i]);
+    const item = porNumero[numero];
+    const status = item ? item.data.status : 'livre';
+    apuracao.push((i + 1) + 'º:' + formatCode_(numero) + '=' + status);
+    if (status === STATUS_COTA_VENDIDA) {
+      return { numero: numero, ordem: i + 1, status_cota: STATUS_COTA_VENDIDA, item: item, apuracao: apuracao.join('; ') };
+    }
+  }
+  // Regra de fechamento (pública): se nenhuma das 5 cotas apuradas foi vendida, vale a cota VENDIDA de numeração
+  // imediatamente acima da do 1º prêmio, voltando ao 0000 depois do 9999. 'ordem' 6 = regra de fechamento.
+  const base = cotaDoPremio_(premios[0]);
+  for (let passo = 1; passo < TOTAL_NUMEROS; passo++) {
+    const candidato = (base + passo) % TOTAL_NUMEROS;
+    const achado = porNumero[candidato];
+    if (achado && achado.data.status === STATUS_COTA_VENDIDA) {
+      apuracao.push('fechamento:' + formatCode_(candidato) + '=' + STATUS_COTA_VENDIDA);
+      return { numero: candidato, ordem: ORDEM_FECHAMENTO, status_cota: STATUS_COTA_VENDIDA, item: achado, apuracao: apuracao.join('; ') };
+    }
+  }
+  return { numero: null, ordem: null, status_cota: STATUS_SEM_GANHADOR, item: null, apuracao: apuracao.join('; ') };
+}
+
+function getResultadoSheet_(criar) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(RESULTADO_SHEET_NAME);
+  if (!sheet) {
+    if (!criar) return null;
+    sheet = ss.insertSheet(RESULTADO_SHEET_NAME);
+  }
+  if (criar && sheet.getLastRow() < 1) {
+    sheet.getRange(1, 1, 1, RESULTADO_COLS.length).setValues([RESULTADO_COLS]);
+    try { sheet.setFrozenRows(1); } catch (ignore) {}
+  }
+  return sheet;
+}
+
+/** Linhas do histórico de resultados, da mais antiga para a mais recente. Vale a ÚLTIMA. */
+function lerResultados_(sheet) {
+  if (!sheet) return [];
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return [];
+  const values = sheet.getRange(2, 1, lastRow - 1, RESULTADO_COLS.length).getValues();
+  const out = [];
+  values.forEach(function (row) {
+    const premios = String(row[RC.premios] === undefined || row[RC.premios] === null ? '' : row[RC.premios]).split(',').map(function (p) { return p.trim(); }).filter(Boolean);
+    if (premios.length !== QTD_PREMIOS) return;
+    const bruto = row[RC.numero_vencedor];
+    const semNumero = bruto === '' || bruto === null || bruto === undefined;
+    out.push({
+      data_registro: String(row[RC.data_registro] || ''),
+      data_extracao: dateToIsoDay_(row[RC.data_extracao]),
+      premios: premios,
+      numero_vencedor: semNumero ? null : formatCode_(Number(bruto)),
+      ordem_premio_usado: semNumero ? null : Number(row[RC.ordem_premio_usado]),
+      status_cota: String(row[RC.status_cota] || ''),
+      tipo: String(row[RC.tipo] || '')
+    });
+  });
+  return out;
+}
+
+function dateToIsoDay_(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value.getTime())) return value.toISOString().slice(0, 10);
+  return String(value || '');
+}
+
+/** Resposta pública: monta o objeto campo a campo (lista branca). Nunca lê nome, WhatsApp nem comprovante. */
+function resultadoPublico_() {
+  const historico = lerResultados_(getResultadoSheet_(false));
+  if (!historico.length) return { ok: true, registrado: false };
+  const atual = historico[historico.length - 1];
+  return {
+    ok: true,
+    registrado: true,
+    data_extracao: atual.data_extracao,
+    premios: atual.premios.slice(),
+    numero_vencedor: atual.numero_vencedor,
+    ordem_premio_usado: atual.ordem_premio_usado
+  };
+}
+
+/**
+ * Registra o resultado (admin). Write-once: se já existe resultado, só aceita com corrigir:true — e a correção vira
+ * uma NOVA linha (o histórico nunca é apagado nem sobrescrito). Nome e WhatsApp do ganhador ficam só na aba privada
+ * 'Resultado' (para auditoria); o dono vê o contato pelo painel (listarAdmin). Esta resposta também não os devolve.
+ */
+function registrarResultado_(payload) {
+  const premios = validarPremios_(payload.premios);
+  const dataExtracao = validarDataExtracao_(payload.dataExtracao);
+  const corrigir = payload.corrigir === true || payload.corrigir === 'true';
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const sheet = getResultadoSheet_(true);
+    const historico = lerResultados_(sheet);
+    if (historico.length && !corrigir) {
+      const atual = historico[historico.length - 1];
+      throw new Error('Já existe um resultado registrado (extração de ' + atual.data_extracao + '). ' +
+        'Ele não pode ser trocado por engano. Para corrigir de propósito, envie corrigir: true; o registro anterior fica guardado no histórico.');
+    }
+
+    const apurado = apurarVencedor_(premios, getRowsWithIndex_(getSheet_()));
+    const tipo = historico.length ? 'correcao' : 'original';
+    const dono = apurado.item ? apurado.item.data : null;
+    const linha = [
+      new Date().toISOString(),
+      dataExtracao,
+      premios.join(','),
+      apurado.numero === null ? '' : formatCode_(apurado.numero),
+      apurado.ordem === null ? '' : apurado.ordem,
+      apurado.status_cota,
+      tipo,
+      apurado.apuracao,
+      dono ? String(dono.nome || '') : '',
+      dono ? String(dono.whatsapp || '') : ''
+    ];
+    const destino = sheet.getRange(sheet.getLastRow() + 1, 1, 1, RESULTADO_COLS.length);
+    // Formato texto: a planilha não pode transformar "0007" em 7 nem "2026-10-24" em data.
+    try { destino.setNumberFormat('@'); } catch (ignore) {}
+    destino.setValues([linha]);
+
+    return {
+      ok: true,
+      registrado: true,
+      data_extracao: dataExtracao,
+      premios: premios,
+      numero_vencedor: apurado.numero === null ? null : formatCode_(apurado.numero),
+      ordem_premio_usado: apurado.ordem,
+      status_cota: apurado.status_cota,
+      tipo: tipo,
+      apuracao: apurado.apuracao,
+      message: apurado.numero === null
+        ? 'Resultado registrado: nenhuma das 5 cotas apuradas foi vendida (paga). Ninguém foi escolhido.'
+        : 'Resultado registrado. Cota vencedora: ' + formatCode_(apurado.numero) + ' (' + apurado.ordem + 'º prêmio). Veja o contato do ganhador no painel.'
+    };
   } finally {
     lock.releaseLock();
   }

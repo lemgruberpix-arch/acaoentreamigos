@@ -36,11 +36,12 @@ function load(passwordMode, token) {
   };
   const props = token ? { ADMIN_TOKEN: token } : {};
   const cache = {};
+  const hooks = {};
   const ctx = {
     console,
-    SpreadsheetApp: { getActiveSpreadsheet: () => ({ getSheetByName: () => sheet }), flush() {} },
-    LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
-    PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => props[k] }) },
+    SpreadsheetApp: { getActiveSpreadsheet: () => ({ getSheetByName: () => sheet, getId: () => 'PLANILHA-ID-DE-TESTE' }), flush() {} },
+    LockService: { getScriptLock: () => ({ waitLock() { if (hooks.aoTravar) { const f = hooks.aoTravar; hooks.aoTravar = null; f(); } }, releaseLock() {} }) },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: (k) => props[k], setProperty: (k, v) => { props[k] = String(v); } }) },
     CacheService: { getScriptCache: () => ({ get: (k) => (k in cache ? cache[k] : null), put: (k, v) => { cache[k] = String(v); }, remove: (k) => { delete cache[k]; } }) },
     ContentService: { createTextOutput: (text) => ({ text, setMimeType() { return this; } }), MimeType: { JSON: 'json' } },
     Utilities: {},
@@ -50,7 +51,9 @@ function load(passwordMode, token) {
   vm.runInContext(source, ctx);
   const post = (body) => JSON.parse(ctx.doPost({ postData: { contents: JSON.stringify(body) } }).text);
   const get = (params) => JSON.parse(ctx.doGet({ parameter: params }).text);
-  return { post, get, rows };
+  // POST com credenciais na query string (?token=...), alem do corpo JSON
+  const postComQuery = (query, body) => JSON.parse(ctx.doPost({ parameter: query, postData: { contents: JSON.stringify(body) } }).text);
+  return { post, get, postComQuery, rows, props, cache, hooks };
 }
 
 let checks = 0;
@@ -127,6 +130,89 @@ function ok(condition, message) { assert(condition, message); checks += 1; }
   ok(api.post({ action: 'listarAdmin', token: 'acaoX' }).ok === false, 'prefixo da senha nao libera');
   ok(api.post({ action: 'listarAdmin', token: 'acaoXXX' }).ok === false, 'senha com letra a mais nao libera');
   ok(api.post({ action: 'listarAdmin', token: 'acaoXX' }).ok === true, 'senha exata libera');
+}
+
+// --- Trocar senha pelo painel ---------------------------------------------
+{
+  const api = load(true, 'senha-atual');
+  ok(api.post({ action: 'trocarSenha', novaSenha: 'nova-senha-1' }).ok === false, 'trocar senha sem a senha atual e recusado');
+  ok(api.post({ action: 'trocarSenha', token: 'errada', novaSenha: 'nova-senha-1' }).ok === false, 'trocar senha com senha atual errada e recusado');
+  ok(api.post({ action: 'trocarSenha', token: 'senha-atual', novaSenha: '123' }).ok === false, 'senha nova curta demais e recusada');
+  ok(api.post({ action: 'trocarSenha', token: 'senha-atual', novaSenha: ' espaco-na-ponta ' }).ok === false, 'senha com espaco nas pontas e recusada');
+  ok(api.post({ action: 'trocarSenha', token: 'senha-atual', novaSenha: 'senha-atual' }).ok === false, 'senha igual a atual e recusada');
+  ok(api.post({ action: 'trocarSenha', token: 'senha-atual', novaSenha: 'x'.repeat(65) }).ok === false, 'senha com mais de 64 caracteres e recusada');
+  ok(api.post({ action: 'listarAdmin', token: 'senha-atual' }).ok === true, 'a senha atual continua valendo depois das tentativas recusadas');
+  const troca = api.post({ action: 'trocarSenha', token: 'senha-atual', novaSenha: 'nova-senha-1' });
+  ok(troca.ok === true, 'troca com a senha atual correta funciona');
+  ok(!JSON.stringify(troca).includes('nova-senha-1') && !JSON.stringify(troca).includes('senha-atual'), 'a resposta nunca devolve nenhuma das senhas');
+  ok(api.post({ action: 'listarAdmin', token: 'senha-atual' }).ok === false, 'a senha antiga deixa de valer na hora');
+  ok(api.post({ action: 'listarAdmin', token: 'nova-senha-1' }).ok === true, 'a senha nova passa a valer na hora');
+  ok(api.get({ action: 'trocarSenha', token: 'nova-senha-1', novaSenha: 'outra-senha-2' }).ok === false, 'trocar senha por GET (URL) e recusado');
+}
+
+// --- Primeiro acesso: criar a senha pelo painel, com o codigo da planilha -----
+{
+  const api = load(true, null); // sem ADMIN_TOKEN: nada admin roda (falha fechada)
+  ok(api.post({ action: 'listarAdmin', token: 'qualquer' }).ok === false, 'antes do primeiro acesso nada admin roda');
+  ok(api.get({ action: 'definirSenhaInicial', codigoPlanilha: 'PLANILHA-ID-DE-TESTE', novaSenha: 'primeira-senha' }).ok === false, 'primeiro acesso por GET (URL) e recusado');
+  const semCodigo = api.post({ action: 'definirSenhaInicial', novaSenha: 'primeira-senha' });
+  ok(semCodigo.ok === false && /não confere/.test(semCodigo.error), 'sem o codigo da planilha e recusado');
+  const errado = api.post({ action: 'definirSenhaInicial', codigoPlanilha: 'outro-id', novaSenha: 'primeira-senha' });
+  ok(errado.ok === false && /não confere/.test(errado.error), 'codigo da planilha errado e recusado');
+  ok(api.post({ action: 'definirSenhaInicial', codigoPlanilha: 'PLANILHA-ID-DE-TESTE', novaSenha: '123' }).ok === false, 'senha curta demais e recusada mesmo com o codigo certo');
+  ok(api.post({ action: 'listarAdmin', token: 'primeira-senha' }).ok === false, 'senha recusada nao ficou valendo');
+  const criou = api.post({ action: 'definirSenhaInicial', codigoPlanilha: '  PLANILHA-ID-DE-TESTE  ', novaSenha: 'primeira-senha' });
+  ok(criou.ok === true, 'codigo certo + senha valida cria a senha');
+  ok(!JSON.stringify(criou).includes('primeira-senha') && !JSON.stringify(criou).includes('PLANILHA-ID-DE-TESTE'), 'a resposta nao devolve a senha nem o codigo');
+  ok(api.post({ action: 'listarAdmin', token: 'primeira-senha' }).ok === true, 'a senha criada vale na hora');
+  const denovo = api.post({ action: 'definirSenhaInicial', codigoPlanilha: 'PLANILHA-ID-DE-TESTE', novaSenha: 'outra-senha-9' });
+  ok(denovo.ok === false && /já foi criada/.test(denovo.error), 'depois de criada, o primeiro acesso deixa de funcionar (nao da para sequestrar)');
+  ok(api.post({ action: 'listarAdmin', token: 'outra-senha-9' }).ok === false, 'a tentativa de sequestro nao mudou a senha');
+}
+{
+  const api = load(true, null);
+  for (let i = 0; i < 8; i++) api.post({ action: 'definirSenhaInicial', codigoPlanilha: 'chute-' + i, novaSenha: 'primeira-senha' });
+  const travado = api.post({ action: 'definirSenhaInicial', codigoPlanilha: 'PLANILHA-ID-DE-TESTE', novaSenha: 'primeira-senha' });
+  ok(travado.ok === false && /Muitas tentativas/.test(travado.error), '8 chutes de codigo travam ate o codigo certo');
+  ok(api.post({ action: 'listarAdmin', token: 'primeira-senha' }).ok === false, 'durante a trava nenhuma senha foi criada');
+}
+{
+  const api = load(true, 'senha-ja-existente');
+  const r = api.post({ action: 'definirSenhaInicial', codigoPlanilha: 'PLANILHA-ID-DE-TESTE', novaSenha: 'nova-tentativa-1' });
+  ok(r.ok === false && /já foi criada/.test(r.error), 'com senha ja existente o primeiro acesso e recusado');
+  ok(api.post({ action: 'listarAdmin', token: 'senha-ja-existente' }).ok === true, 'a senha existente continua valendo');
+}
+
+// --- Correcoes da revisao independente (Codex #1866) ----------------------------
+{
+  // (1) trocar senha: reconfere a senha ATUAL dentro da trava (uma troca concorrente ja mudou a senha)
+  const api = load(true, 'senha-atual');
+  api.hooks.aoTravar = () => { api.props.ADMIN_TOKEN = 'trocada-por-outro-pedido'; }; // outro pedido troca a senha enquanto este espera a trava
+  const r = api.post({ action: 'trocarSenha', token: 'senha-atual', novaSenha: 'minha-nova-senha' });
+  ok(r.ok === false && /Não autorizado/.test(r.error), 'troca concorrente com a senha velha e recusada dentro da trava');
+  ok(api.props.ADMIN_TOKEN === 'trocada-por-outro-pedido', 'a senha da troca concorrente NAO foi sobrescrita pela velha');
+  ok(Number(api.cache.admin_falhas) === 1, 'a troca recusada conta como erro na trava');
+  ok(api.post({ action: 'listarAdmin', token: 'trocada-por-outro-pedido' }).ok === true, 'a senha vigente continua valendo');
+}
+{
+  // (2) a conferencia e a contagem de erros acontecem sob a trava do script
+  const api = load(true, 'senha-atual');
+  let travou = 0;
+  api.hooks.aoTravar = () => { travou += 1; };
+  api.post({ action: 'listarAdmin', token: 'errada' });
+  ok(travou === 1, 'requireAdmin_ confere a senha e conta o erro sob o LockService');
+}
+{
+  // (3) senha/codigos nunca na URL, em GET ou POST (a URL fica em registros)
+  const api = load(true, 'senha-atual');
+  const naUrl = api.postComQuery({ token: 'senha-atual' }, { action: 'listarAdmin' });
+  ok(naUrl.ok === false && /URL/.test(naUrl.error), 'POST com ?token= na URL e recusado mesmo com a senha certa');
+  ok(api.postComQuery({ novaSenha: 'qualquer-coisa' }, { action: 'trocarSenha', token: 'senha-atual' }).ok === false, 'POST com ?novaSenha= na URL e recusado');
+  ok(api.postComQuery({ codigoPlanilha: 'PLANILHA-ID-DE-TESTE' }, { action: 'definirSenhaInicial', novaSenha: 'primeira-senha' }).ok === false, 'POST com ?codigoPlanilha= na URL e recusado');
+  ok(api.postComQuery({ adminToken: 'senha-atual' }, { action: 'listarAdmin' }).ok === false, 'POST com ?adminToken= na URL e recusado');
+  ok(api.get({ action: 'listar', token: 'x' }).ok === false, 'GET publico com token na URL tambem e recusado');
+  ok(api.post({ action: 'listarAdmin', token: 'senha-atual' }).ok === true, 'a senha no CORPO continua funcionando');
+  ok(api.get({ action: 'listar' }).ok === true, 'GET publico sem credenciais continua funcionando');
 }
 
 // --- Falha fechada: senha ligada mas ADMIN_TOKEN nao configurado ---------

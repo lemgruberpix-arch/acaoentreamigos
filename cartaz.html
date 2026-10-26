@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Cartaz & Bilhete Premiado Oficial | Rifa Honda XRE 190 2018</title>
-  <meta name="description" content="Ação entre amigos com Honda XRE 190 2018 e capacete. Cotas a partir de R$ 20, sorteio em 31/12 pela Loteria Federal." />
+  <meta name="description" content="Ação entre amigos com Honda XRE 190 2018 e capacete. Cotas a partir de R$ 20, sorteio em 31/12 pela Loteria Federal; se não houver extração nessa data, vale a primeira seguinte." />
   <meta name="theme-color" content="#f6f2ea" />
   <style>
     :root {
@@ -620,6 +620,21 @@
       border-color: #e5ded1;
     }
     .subheadline strong { color: #172033; }
+    .prize-choice {
+      margin: 10px auto 16px;
+      color: #172033;
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 850;
+      text-align: center;
+      line-height: 1.25;
+    }
+    .prize-choice small {
+      display: block;
+      margin-top: 4px;
+      color: #657080;
+      font-size: 0.72em;
+      font-weight: 700;
+    }
     .hero-showcase {
       background: #fff;
       border-color: #e2dbce;
@@ -726,7 +741,7 @@
 
     <div class="poster-body">
       <div class="region-callout">
-        <span class="region-pill">🏍️ Moto + capacete • Sorteio em 31/12</span>
+        <span class="region-pill">🏍️ Moto + capacete • Sorteio em 31/12*</span>
       </div>
 
       <h1 class="headline">
@@ -734,8 +749,13 @@
         <span>PARTICIPE POR R$ 20</span>
       </h1>
 
+      <p class="prize-choice">
+        Honda XRE 190 + capacete, ou R$ 20 mil no Pix*
+        <small>*O ganhador escolhe</small>
+      </p>
+
       <p class="subheadline">
-        <strong>Cota individual por R$ 20,00.</strong> Escolha seus números, pague por Pix e envie o comprovante. Sorteio em 31/12 pela Loteria Federal.
+        <strong>Cota individual por R$ 20,00.</strong> Escolha seus números, pague por Pix e envie o comprovante. Sorteio em 31/12 pela Loteria Federal*.
       </p>
 
       <!-- Foto Oficial da Moto -->
@@ -781,7 +801,7 @@
         <div class="benefit-card">
           <span class="benefit-icon">📡</span>
           <span class="benefit-title">Ao Vivo no YouTube</span>
-          <p class="benefit-desc">Sorteio em 31/12 pela Loteria Federal, com transmissão anunciada no site.</p>
+          <p class="benefit-desc">Sorteio em 31/12 pela Loteria Federal*, com transmissão anunciada no site.</p>
         </div>
       </div>
 
@@ -826,14 +846,14 @@
             <div class="detail-value highlight-gold">R$ 20,00 (Pix Rápido e Reserva Imediata)</div>
           </div>
 
-          <div class="detail-box youtube-live">
+          <div class="detail-box">
             <span class="detail-label">Data do Sorteio Oficial</span>
-            <div class="detail-value">🔴 31/12 pela Loteria Federal — TRANSMISSÃO AO VIVO NO YOUTUBE!</div>
+            <div class="detail-value">🔴 31/12 pela Loteria Federal* — transmissão oficial da Caixa</div>
           </div>
 
           <div class="detail-box">
-            <span class="detail-label">Chave Pix Oficial (Welington Santos - Carmo/RJ)</span>
-            <div class="detail-value highlight-gold">22992836392</div>
+            <span class="detail-label">Chave Pix Oficial</span>
+            <div class="detail-value highlight-gold">Pague pelo Pix no site ou use o QR Code</div>
           </div>
 
           <div class="detail-box">
@@ -846,6 +866,7 @@
       </section>
 
       <footer class="poster-footer">
+        <p><strong>*Se não houver extração da Loteria Federal nessa data, vale a primeira extração seguinte.</strong></p>
         <p>
           <strong>Site Oficial de Vendas:</strong> <span id="publicSiteLabel"></span> • Responsável: <strong>Welington Santos</strong>
         </p>
@@ -865,11 +886,13 @@
       if (shareBtn) {
         shareBtn.addEventListener('click', function () {
           var text = [
-            '🏍️ *MUDE DE VIDA EM 2027 COM UMA HONDA XRE 190 NA GARAGEM!*',
+            '🏍️ *AÇÃO ENTRE AMIGOS • HONDA XRE 190 + CAPACETE*',
             '',
-            '🔥 Por apenas *R$ 20,00* (o valor de 2 corridas!), você concorre a uma *Honda XRE 190 2018 seminova* pronta pra trabalhar ou passear!',
-            '🎯 Cotas de *0000 a 9999* | Sorteio *31/12 pela Loteria Federal* com *TRANSMISSÃO AO VIVO NO YOUTUBE!*',
-            '💳 Chave Pix: *22992836392* (Welington Santos)',
+            '🔥 Por apenas *R$ 20,00*, você concorre a uma *Honda XRE 190 2018 seminova + capacete, ou R$ 20 mil no Pix*.',
+            '⭐ *O ganhador escolhe* entre a moto com capacete e o valor no Pix.',
+            '🎯 Cotas de *0000 a 9999* | Sorteio *31/12 pela Loteria Federal* (Caixa)',
+            'ℹ️ Se não houver extração nessa data, vale a primeira extração seguinte.',
+            '💳 Pagamento seguro via Pix no site com confirmação por comprovante',
             '📲 WhatsApp Oficial: *(22) 99283-9362*',
             '',
             '👉 *Escolha sua cota agora no link oficial:*',
@@ -910,24 +933,24 @@
         ctx.textAlign = 'center';
         ctx.fillText('🎟️ BILHETE PREMIADO OFICIAL • SÉRIE 0000–9999', 540, 100);
 
-        // Chamada Mototaxistas
+        // Chamada Oficial
         ctx.fillStyle = '#6ee7b7';
         ctx.font = '800 30px Inter, Arial, sans-serif';
-        ctx.fillText('🏍️ ALÔ MOTOTAXISTAS E TRABALHADORES DO NORDESTE, RJ E MG!', 540, 195);
+        ctx.fillText('🏍️ AÇÃO ENTRE AMIGOS • CARMO/RJ', 540, 195);
 
         // Headline Principal
         ctx.fillStyle = '#ffffff';
         ctx.font = '900 54px Inter, Arial, sans-serif';
-        ctx.fillText('MUDE DE VIDA EM 2027 COM UMA', 540, 270);
+        ctx.fillText('HONDA XRE 190 2018 + CAPACETE', 540, 270);
         ctx.fillStyle = '#fde047';
         ctx.font = '900 62px Inter, Arial, sans-serif';
-        ctx.fillText('HONDA XRE 190 NA GARAGEM!', 540, 345);
+        ctx.fillText('SEMINOVA • PRONTA PARA RODAR', 540, 345);
 
         // Subheadline R$ 20
         ctx.fillStyle = '#f8fafc';
         ctx.font = '700 31px Inter, Arial, sans-serif';
-        ctx.fillText('Por apenas R$ 20,00 (o valor de 2 corridas!), você concorre', 540, 410);
-        ctx.fillText('a uma XRE 190 pronta pra trabalhar ou passear!', 540, 452);
+        ctx.fillText('Cota individual por R$ 20,00 • Combos com desconto', 540, 410);
+        ctx.fillText('Sorteio 31/12 pela Loteria Federal* (Caixa)', 540, 452);
 
         if (heroImg) {
           ctx.save();
@@ -997,15 +1020,15 @@
         ctx.font = '900 28px Inter, Arial, sans-serif';
         ctx.fillText('🔴 SORTEIO 31/12 (LOTERIA FEDERAL)', 460, 1435);
         ctx.fillStyle = '#ffffff';
-        ctx.font = '800 26px Inter, Arial, sans-serif';
-        ctx.fillText('TRANSMISSÃO AO VIVO NO YOUTUBE!', 460, 1475);
+        ctx.font = '800 24px Inter, Arial, sans-serif';
+        ctx.fillText('Transmissão oficial na Caixa', 460, 1475);
 
         ctx.fillStyle = '#fde047';
-        ctx.font = '900 32px Inter, Arial, sans-serif';
-        ctx.fillText('💳 PIX: 22992836392', 460, 1550);
+        ctx.font = '900 30px Inter, Arial, sans-serif';
+        ctx.fillText('💳 PAGAMENTO: PIX NO SITE', 460, 1550);
         ctx.fillStyle = '#cbd5e1';
         ctx.font = '700 24px Inter, Arial, sans-serif';
-        ctx.fillText('Welington Santos (Carmo/RJ)', 460, 1588);
+        ctx.fillText('Comprovante conferido pelo organizador', 460, 1588);
 
         ctx.fillStyle = '#6ee7b7';
         ctx.font = '900 32px Inter, Arial, sans-serif';

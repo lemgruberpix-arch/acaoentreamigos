@@ -11,12 +11,12 @@ window.RIFA_CONFIG = {
   WHATSAPP_RESPONSAVEL: "5522992839362",
 
   DATA_SORTEIO: "31/12 (Loteria Federal)",
-  PREMIO_RIFA: "Honda XRE 190 2018 (seminova)",
+  PREMIO_RIFA: "Honda XRE 190 2018 + capacete, ou R$ 20 mil no Pix (escolha do ganhador)",
   CUSTO_PREMIO: 17000,
   LUCRO_ALVO: 40000,
 
-  PIX_KEY: "22992836392",
-  PIX_RECEBEDOR: "WELINGTON SANTOS",
+  PIX_KEY: "db150d56-cbb9-4cd5-849c-6b6790ff4495",
+  PIX_RECEBEDOR: "ACAO ENTRE AMIGOS",
   PIX_CIDADE: "CARMO",
 
   VALOR_NUMERO: 20,
@@ -38,5 +38,5 @@ window.RIFA_CONFIG = {
   // Segurança: false = comprovante vai para o painel e o responsável confirma após conferir no banco.
   AUTO_CONFIRMAR_COM_COMPROVANTE: false,
 
-  API_URL: "https://script.google.com/macros/s/AKfycbxPV_Y1h0k_ZbJl5XsF2fx3v8vx-r-s9mOk5SiaCAtKu3D9Ix5F-smWYPvVfv2g0OoN/exec"
+  API_URL: "https://script.google.com/macros/s/AKfycbyp5H5l3waaZIerwBnYf7rXEHK0fhU6nVlTTDJLQ9LHQRrJmcPPNkBf4bVDA5h-f5IN/exec"
 };

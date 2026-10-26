@@ -344,15 +344,15 @@
       </div>
       <div class="field">
         <label for="inpDraw">Data do Sorteio</label>
-        <input id="inpDraw" type="text" value="SORTEIO 31/12 • LOTERIA FEDERAL" />
+        <input id="inpDraw" type="text" value="SORTEIO 31/12 • LOTERIA FEDERAL*" />
       </div>
       <div class="field">
         <label for="inpPhone">WhatsApp Oficial</label>
         <input id="inpPhone" type="text" value="(22) 99283-9362" />
       </div>
       <div class="field">
-        <label for="inpPix">Chave Pix (Welington Santos)</label>
-        <input id="inpPix" type="text" value="22992836392" />
+        <label for="inpPix">Forma de Pagamento</label>
+        <input id="inpPix" type="text" value="Pix no site oficial" />
       </div>
       <div>
         <button type="button" class="btn btn-red" id="btnRedrawAll" style="width:100%">🔄 Atualizar Todos</button>
@@ -477,14 +477,15 @@ Participe a partir de R$ 20 por cota. Escolha seus números, pague por Pix e env
 • 10 Cotas = R$ 170,00 (Economize R$ 30!)
 
 ✅ Numeração: 0000 a 9999 (Escolha seu número ou use a Surpresinha +1, +5, +10!)
-✅ Sorteio: 31/12 pela Loteria Federal
+✅ Sorteio: 31/12 pela Loteria Federal*
+ℹ️ *Se não houver extração nessa data, vale a primeira extração seguinte.
 🔴 Transmissão pelo YouTube: confira o horário e as regras no site.
 🔒 Seus dados são usados para identificar e confirmar a reserva.
 
 👉 GARANTA SUA COTA AGORA NO LINK DA BIO:
 __PUBLIC_SITE_URL__
 
-💳 Chave Pix: 22992836392 (Welington Santos - Carmo/RJ)
+💳 Pagamento: Pix no site oficial com envio de comprovante
 📲 WhatsApp Oficial: (22) 99283-9362
 
 #HondaXRE190 #XRE190 #AcaoEntreAmigos #CarmoRJ #NovaFriburgo #Teresopolis #Petropolis #SantoAntonioDePadua #Itaperuna #AlemParaiba #LeopoldinaMG #CataguasesMG #MuriaeMG #CamposDosGoytacazes #Macae #RegiaoSerranaRJ</textarea>
@@ -608,9 +609,9 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
       const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
-      const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
+      const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL*";
       const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
-      const pix = document.getElementById("inpPix").value || "22992836392";
+      const pix = document.getElementById("inpPix").value || "Pix no site oficial";
 
       // Background
       const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
@@ -698,11 +699,11 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#ffffff";
       ctx.font = "800 32px Inter, sans-serif";
-      ctx.fillText("🔴 TRANSMISSÃO AO VIVO NO YOUTUBE", W / 2, 1345);
+      ctx.fillText("🔴 TRANSMISSÃO AO VIVO DA CAIXA", W / 2, 1345);
 
       ctx.fillStyle = "#cbd5e1";
       ctx.font = "600 26px Inter, sans-serif";
-      ctx.fillText("Ganhador avisado na hora • Numeração de 0000 a 9999", W / 2, 1395);
+      ctx.fillText("Ganhador avisado por WhatsApp no mesmo dia • Numeração de 0000 a 9999", W / 2, 1395);
 
       // Contatos
       ctx.fillStyle = "#1e293b";
@@ -719,7 +720,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#ffffff";
       ctx.font = "800 34px Inter, sans-serif";
-      ctx.fillText("💳 Pix: " + pix + " (Welington Santos)", W / 2, 1572);
+      ctx.fillText("💳 " + pix, W / 2, 1572);
 
       ctx.fillStyle = "#94a3b8";
       ctx.font = "700 26px Inter, sans-serif";
@@ -750,7 +751,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
       const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
       const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
-      const pix = document.getElementById("inpPix").value || "22992836392";
+      const pix = document.getElementById("inpPix").value || "Pix no site oficial";
 
       ctx.fillStyle = "#090d16";
       ctx.fillRect(0, 0, W, H);
@@ -800,7 +801,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#ffffff";
       ctx.font = "700 24px Inter, sans-serif";
-      ctx.fillText("🏆 " + draw + " • TRANSMISSÃO AO VIVO NO YOUTUBE", W / 2, 765);
+      ctx.fillText("🏆 " + draw + " • TRANSMISSÃO AO VIVO NA CAIXA", W / 2, 765);
 
       // Contatos
       ctx.fillStyle = "#0f172a";
@@ -813,7 +814,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#4ade80";
       ctx.font = "900 30px Inter, sans-serif";
-      ctx.fillText("📲 WhatsApp: " + phone + "   |   💳 Pix: " + pix, W / 2, 858);
+      ctx.fillText("📲 WhatsApp: " + phone + "   |   💳 " + pix, W / 2, 858);
 
       ctx.fillStyle = "#cbd5e1";
       ctx.font = "700 24px Inter, sans-serif";
@@ -840,7 +841,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
       const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
       const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
-      const pix = document.getElementById("inpPix").value || "22992836392";
+      const pix = document.getElementById("inpPix").value || "Pix no site oficial";
 
       // Fundo branco/off-white de alto contraste para economizar tinta e dar leitura nítida
       ctx.fillStyle = "#ffffff";
@@ -925,7 +926,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#e2e8f0";
       ctx.font = "700 48px Inter, sans-serif";
-      ctx.fillText("O ganhador é avisado na hora • Numeração 0000 a 9999", W / 2, 2630);
+      ctx.fillText("Ganhador avisado por WhatsApp no mesmo dia • Numeração 0000 a 9999", W / 2, 2630);
 
       // Rodapé com QR Code Grande e Contatos
       const qrSize = 440;
@@ -938,11 +939,11 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#111827";
       ctx.font = "800 56px Inter, sans-serif";
-      ctx.fillText("💳 CHAVE PIX: " + pix, 660, 2920);
+      ctx.fillText("💳 PAGAMENTO: " + pix, 660, 2920);
 
       ctx.fillStyle = "#4b5563";
       ctx.font = "700 46px Inter, sans-serif";
-      ctx.fillText("Titular: WELINGTON SANTOS (Carmo/RJ)", 660, 3000);
+      ctx.fillText("Responsável: WELINGTON SANTOS (Carmo/RJ)", 660, 3000);
 
       ctx.fillStyle = "#dc2626";
       ctx.font = "900 52px Inter, sans-serif";
@@ -1196,55 +1197,60 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       ctx.textAlign = "left";
       ctx.fillStyle = "#657080";
       ctx.font = "800 28px Arial";
-      ctx.fillText("AÇÃO ENTRE AMIGOS • CARMO/RJ", 74, 92);
+      ctx.fillText("AÇÃO ENTRE AMIGOS • CARMO/RJ", 74, 292);
       ctx.fillStyle = "#172033";
-      ctx.font = "900 72px Arial";
-      ctx.fillText(title, 72, 180);
+      ctx.font = "900 68px Arial";
+      ctx.fillText(title, 72, 374);
       ctx.fillStyle = "#c8222a";
-      ctx.font = "900 42px Arial";
-      ctx.fillText("MOTO + CAPACETE", 74, 244);
+      ctx.font = "900 32px Arial";
+      ctx.fillText("HONDA XRE 190 + CAPACETE, OU R$ 20 MIL NO PIX*", 74, 430);
+      ctx.fillStyle = "#657080";
+      ctx.font = "700 23px Arial";
+      ctx.fillText("*O ganhador escolhe", 74, 470);
 
-      lightCard(ctx, 64, 292, 952, 760, 34, "#ffffff", "#ded7c9");
-      drawContainImage(ctx, heroImg, 86, 318, 908, 548);
-      lightCard(ctx, 724, 790, 250, 232, 26, "#ffffff", "#ded7c9");
-      drawContainImage(ctx, helmetImg, 744, 808, 210, 178);
+      lightCard(ctx, 64, 500, 952, 590, 34, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, heroImg, 86, 520, 908, 440);
+      lightCard(ctx, 744, 840, 230, 216, 26, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, helmetImg, 762, 856, 194, 170);
       ctx.fillStyle = "#657080";
       ctx.font = "700 22px Arial";
-      ctx.fillText("Imagens ilustrativas", 92, 1012);
+      ctx.fillText("Imagens ilustrativas", 92, 1054);
 
-      lightCard(ctx, 64, 1090, 952, 156, 32, "#c8222a");
+      lightCard(ctx, 64, 1115, 952, 118, 32, "#c8222a");
       ctx.textAlign = "center";
       ctx.fillStyle = "#ffffff";
-      ctx.font = "900 58px Arial";
-      ctx.fillText(price + " A COTA", W / 2, 1188);
+      ctx.font = "900 52px Arial";
+      ctx.fillText(price + " A COTA", W / 2, 1192);
 
-      lightCard(ctx, 64, 1276, 952, 180, 28, "#fffdf8", "#ded7c9");
+      lightCard(ctx, 64, 1260, 952, 132, 28, "#fffdf8", "#ded7c9");
       ctx.fillStyle = "#172033";
-      ctx.font = "900 30px Arial";
-      ctx.fillText("COMBOS", W / 2, 1332);
-      ctx.font = "800 31px Arial";
-      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 1394);
+      ctx.font = "900 27px Arial";
+      ctx.fillText("COMBOS", W / 2, 1305);
+      ctx.font = "800 29px Arial";
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 1360);
 
       ctx.fillStyle = "#172033";
-      ctx.font = "900 34px Arial";
-      ctx.fillText(draw, W / 2, 1522);
+      ctx.font = "900 31px Arial";
+      ctx.fillText(draw, W / 2, 1418);
       ctx.fillStyle = "#657080";
-      ctx.font = "700 27px Arial";
-      ctx.fillText("Escolha seus números • Pix • Envie o comprovante", W / 2, 1572);
+      ctx.font = "700 19px Arial";
+      ctx.fillText("*Sem extração nessa data, vale a primeira seguinte", W / 2, 1456);
+      ctx.font = "700 22px Arial";
+      ctx.fillText("Concorra para começar 2027 com moto nova ou R$ 20 mil no bolso", W / 2, 1490);
 
-      drawVectorQrCode(ctx, 76, 1640, 210);
+      drawVectorQrCode(ctx, 76, 1502, 158);
       ctx.textAlign = "left";
       ctx.fillStyle = "#c8222a";
-      ctx.font = "900 34px Arial";
-      ctx.fillText("ESCOLHA SUA COTA", 322, 1706);
+      ctx.font = "900 30px Arial";
+      ctx.fillText("ESCOLHA SUA COTA", 270, 1538);
       ctx.fillStyle = "#172033";
-      ctx.font = "800 26px Arial";
-      ctx.fillText(cleanSiteLabel(), 322, 1753);
+      ctx.font = "800 24px Arial";
+      ctx.fillText(cleanSiteLabel(), 270, 1580);
       ctx.fillStyle = "#657080";
-      ctx.font = "700 25px Arial";
-      ctx.fillText("WhatsApp: " + phone, 322, 1800);
-      ctx.font = "600 21px Arial";
-      ctx.fillText("Responsável: Welington Santos", 322, 1840);
+      ctx.font = "700 22px Arial";
+      ctx.fillText("Link na bio • WhatsApp: " + phone, 270, 1620);
+      ctx.font = "600 19px Arial";
+      ctx.fillText("Responsável: Welington Santos", 270, 1652);
     }
 
     function renderFeedCanvas() {
@@ -1268,35 +1274,45 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       ctx.font = "900 60px Arial";
       ctx.fillText(title, W / 2, 142);
       ctx.fillStyle = "#c8222a";
-      ctx.font = "900 32px Arial";
-      ctx.fillText("MOTO + CAPACETE", W / 2, 194);
-
-      lightCard(ctx, 50, 232, 980, 590, 30, "#ffffff", "#ded7c9");
-      drawContainImage(ctx, heroImg, 78, 258, 760, 512);
-      lightCard(ctx, 802, 542, 194, 236, 22, "#ffffff", "#ded7c9");
-      drawContainImage(ctx, helmetImg, 816, 558, 166, 188);
-
-      lightCard(ctx, 70, 850, 940, 126, 28, "#c8222a");
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "900 48px Arial";
-      ctx.fillText("R$ 20 A COTA", W / 2, 930);
-      ctx.fillStyle = "#172033";
-      ctx.font = "800 27px Arial";
-      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 1038);
-      ctx.font = "900 29px Arial";
-      ctx.fillText("SORTEIO 31/12 • LOTERIA FEDERAL", W / 2, 1092);
-
-      drawVectorQrCode(ctx, 74, 1132, 156);
-      ctx.textAlign = "left";
-      ctx.fillStyle = "#c8222a";
-      ctx.font = "900 29px Arial";
-      ctx.fillText("ESCOLHA SUA COTA", 264, 1184);
-      ctx.fillStyle = "#172033";
-      ctx.font = "800 22px Arial";
-      ctx.fillText(cleanSiteLabel(), 264, 1228);
+      ctx.font = "900 28px Arial";
+      ctx.fillText("HONDA XRE 190 + CAPACETE, OU R$ 20 MIL NO PIX*", W / 2, 190);
       ctx.fillStyle = "#657080";
       ctx.font = "700 21px Arial";
-      ctx.fillText("WhatsApp: " + phone + " • Imagens ilustrativas", 264, 1270);
+      ctx.fillText("*O ganhador escolhe", W / 2, 224);
+
+      lightCard(ctx, 50, 250, 980, 500, 30, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, heroImg, 78, 272, 760, 428);
+      lightCard(ctx, 802, 492, 194, 222, 22, "#ffffff", "#ded7c9");
+      drawContainImage(ctx, helmetImg, 816, 510, 166, 184);
+
+      lightCard(ctx, 70, 774, 940, 112, 28, "#c8222a");
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 46px Arial";
+      ctx.fillText("R$ 20 A COTA", W / 2, 846);
+      ctx.fillStyle = "#172033";
+      ctx.font = "800 26px Arial";
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 938);
+      ctx.font = "900 27px Arial";
+      ctx.fillText("SORTEIO 31/12 • LOTERIA FEDERAL*", W / 2, 982);
+      ctx.fillStyle = "#657080";
+      ctx.font = "700 18px Arial";
+      ctx.fillText("*Sem extração nessa data, vale a primeira seguinte", W / 2, 1015);
+      ctx.font = "700 20px Arial";
+      ctx.fillText("Concorra para começar 2027 com moto nova ou R$ 20 mil no bolso", W / 2, 1048);
+
+      drawVectorQrCode(ctx, 74, 1072, 158);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#c8222a";
+      ctx.font = "900 28px Arial";
+      ctx.fillText("ESCOLHA SUA COTA", 264, 1116);
+      ctx.fillStyle = "#172033";
+      ctx.font = "800 22px Arial";
+      ctx.fillText(cleanSiteLabel(), 264, 1158);
+      ctx.fillStyle = "#657080";
+      ctx.font = "700 20px Arial";
+      ctx.fillText("Link na bio • WhatsApp: " + phone, 264, 1200);
+      ctx.font = "600 19px Arial";
+      ctx.fillText("Imagens ilustrativas", 264, 1236);
     }
 
     function renderPosterA4Canvas() {
@@ -1305,7 +1321,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       const W = 2480, H = 3508;
       const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
       const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
-      const pix = document.getElementById("inpPix").value || "22992836392";
+      const pix = document.getElementById("inpPix").value || "Pix no site oficial";
 
       ctx.fillStyle = "#fffdf8";
       ctx.fillRect(0, 0, W, H);
@@ -1319,8 +1335,11 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       ctx.font = "900 142px Arial";
       ctx.fillText(title, 150, 370);
       ctx.fillStyle = "#c8222a";
-      ctx.font = "900 74px Arial";
-      ctx.fillText("MOTO + CAPACETE", 155, 478);
+      ctx.font = "900 61px Arial";
+      ctx.fillText("HONDA XRE 190 + CAPACETE, OU R$ 20 MIL NO PIX*", 155, 474);
+      ctx.fillStyle = "#657080";
+      ctx.font = "700 44px Arial";
+      ctx.fillText("*O ganhador escolhe", 160, 536);
 
       lightCard(ctx, 140, 560, 2200, 1420, 52, "#ffffff", "#ded7c9");
       drawContainImage(ctx, heroImg, 200, 620, 1730, 1210);
@@ -1340,28 +1359,32 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       ctx.font = "900 61px Arial";
       ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 2445);
       ctx.font = "900 70px Arial";
-      ctx.fillText("SORTEIO 31/12 • LOTERIA FEDERAL", W / 2, 2570);
+      ctx.fillText("SORTEIO 31/12 • LOTERIA FEDERAL*", W / 2, 2560);
       ctx.fillStyle = "#657080";
+      ctx.font = "700 42px Arial";
+      ctx.fillText("*Se não houver extração nessa data, vale a primeira extração seguinte", W / 2, 2630);
       ctx.font = "700 48px Arial";
-      ctx.fillText("Escolha o número • Pague por Pix • Envie o comprovante", W / 2, 2655);
+      ctx.fillText("Concorra para começar 2027 com moto nova ou R$ 20 mil no bolso", W / 2, 2690);
+      ctx.font = "700 42px Arial";
+      ctx.fillText("Escolha o número • Pague por Pix • Envie o comprovante", W / 2, 2750);
 
-      drawVectorQrCode(ctx, 170, 2780, 500);
+      drawVectorQrCode(ctx, 170, 2810, 500);
       ctx.textAlign = "left";
       ctx.fillStyle = "#c8222a";
       ctx.font = "900 72px Arial";
-      ctx.fillText("APONTE A CÂMERA", 760, 2870);
+      ctx.fillText("APONTE A CÂMERA", 760, 2900);
       ctx.fillStyle = "#172033";
       ctx.font = "800 50px Arial";
-      ctx.fillText(cleanSiteLabel(), 760, 2960);
+      ctx.fillText(cleanSiteLabel(), 760, 2990);
       ctx.font = "800 48px Arial";
-      ctx.fillText("WhatsApp: " + phone, 760, 3055);
-      ctx.fillText("Pix: " + pix + " • Welington Santos", 760, 3140);
+      ctx.fillText("WhatsApp: " + phone, 760, 3085);
+      ctx.fillText("Pagamento: " + pix, 760, 3170);
       ctx.fillStyle = "#657080";
       ctx.font = "600 40px Arial";
-      ctx.fillText("Prêmio e documentação: confirme os detalhes com o responsável.", 760, 3225);
+      ctx.fillText("Prêmio e documentação: confirme os detalhes com o responsável.", 760, 3255);
       ctx.textAlign = "center";
-      ctx.font = "600 36px Arial";
-      ctx.fillText("A participação pressupõe pagamento confirmado e observância das regras da ação.", W / 2, 3400);
+      ctx.font = "600 44px Arial";
+      ctx.fillText("A participação pressupõe pagamento confirmado e observância das regras da ação.", W / 2, 3420);
     }
 
     function renderAllStaticCanvases() {
