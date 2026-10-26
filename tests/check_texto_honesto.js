@@ -44,8 +44,8 @@ ok(/UCPbhr02AfVb2nd5pm12BxTw/.test(idx), 'player usa o ID do canal oficial da CA
 // premio: moto OU R$ 20 mil no Pix, escolha do ganhador (decisao do Almir, 26/10/2026) - igual no site e na configuracao
 const cfg = fs.readFileSync(path.join(root, 'assets', 'config.js'), 'utf8');
 ok(/R\$ 20 mil no Pix/.test(cfg) && /escolha do ganhador/.test(cfg), 'config.js: PREMIO_RIFA traz moto ou R$ 20 mil no Pix (escolha do ganhador)');
-ok(/O ganhador escolhe: a moto entregue em casa ou R\$ 20 mil no Pix/.test(idx), 'index.html: nota do asterisco com a escolha do ganhador');
-ok(/Condições de entrega e de pagamento são combinadas com o responsável/.test(idx), 'index.html: avisa que entrega e pagamento sao combinados com o responsavel');
+ok(/O ganhador escolhe: a moto entregue em casa em até 20 dias ou R\$ 20 mil no Pix em até 12 horas/.test(idx), 'index.html: nota do asterisco com a escolha do ganhador');
+ok(/contados da escolha do ganhador/.test(idx) && /até 20 \(vinte\) dias/.test(fs.readFileSync(path.join(root, 'regulamento.html'), 'utf8')) && /até 12 \(doze\) horas/.test(fs.readFileSync(path.join(root, 'regulamento.html'), 'utf8')), 'index e regulamento: prazos de 20 dias (moto) e 12 horas (Pix)');
 
 // regulamento: link na cartela e mesma regra de sorteio no site e no regulamento (inclui a regra de fechamento)
 const reg = semComentarios(fs.readFileSync(path.join(root, 'regulamento.html'), 'utf8'));
