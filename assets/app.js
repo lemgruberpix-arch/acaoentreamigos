@@ -130,6 +130,7 @@
     pixKeyText: document.getElementById("pixKeyText"),
     copyPixBtn: document.getElementById("copyPixBtn"),
     shareBtn: document.getElementById("shareBtn"),
+    shareHeroBtn: document.getElementById("shareHeroBtn"),
     refreshBtn: document.getElementById("refreshBtn"),
     prevPanelBtn: document.getElementById("prevPanelBtn"),
     nextPanelBtn: document.getElementById("nextPanelBtn"),
@@ -397,6 +398,7 @@
       });
     }
     els.shareBtn.addEventListener("click", shareRaffle);
+    if (els.shareHeroBtn) els.shareHeroBtn.addEventListener("click", shareRaffle);
     els.refreshBtn.addEventListener("click", () => loadNumbers({ announce: true }));
     if (els.statusCloseBtn) els.statusCloseBtn.addEventListener("click", hideMessage);
     if (els.reopenPixBtn) els.reopenPixBtn.addEventListener("click", () => { if (lastReservation) showSuccessModal(lastReservation); });
@@ -1169,9 +1171,8 @@
       `🎟️ Valor: ${formatCurrency(getValuePerNumber())} por cota`,
       `🏆 Prêmio: ${CFG.PREMIO_RIFA || "Honda XRE 190 2018 (seminova)"}`,
       `📅 Sorteio: ${CFG.DATA_SORTEIO || "31/12 (Loteria Federal)"}`,
-      `🔑 Chave Pix: ${getPixKey()}`,
       "",
-      "Escolha seu número e participe pelo link:",
+      "Aponte a câmera ou toque no link e veja o app (só olhar não custa nada):",
       /^https?:$/.test(window.location.protocol) ? window.location.origin + window.location.pathname : ""
     ].join("\n").trim();
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener");

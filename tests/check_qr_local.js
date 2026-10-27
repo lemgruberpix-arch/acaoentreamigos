@@ -39,7 +39,7 @@ ok(/<canvas[^>]*id="pixQrCode"[^>]*aria-label="[^"]+"/.test(html) && /<canvas[^>
 ok(/Abra o app do seu banco, escolha Pix, e cole ou aponte a câmera para o QR\./.test(html), 'texto de apoio da tela inicial');
 ok(/id="copyPixBtn">Copiar chave Pix</.test(html) && /id="copyPixStaticBtn">Copiar código Pix \(copia e cola\)</.test(html), 'tela inicial: botoes "Copiar chave Pix" e "Copiar código Pix (copia e cola)"');
 ok(/Valor a pagar: <strong id="modalTotal">/.test(html), 'janela do Pix: "Valor a pagar" em destaque no topo');
-const blocoPix = html.slice(html.indexOf('id="pixBox"'), html.indexOf('share-btn'));
+const blocoPix = html.slice(html.indexOf('id="pixBox"'), html.indexOf('id="shareBtn"'));
 const janelaPix = html.slice(html.indexOf('id="successModal"'), html.indexOf('id="meusModal"'));
 ok(blocoPix.length > 500 && janelaPix.length > 500, 'blocos do Pix localizados no HTML');
 ok(!/WELINGTON|ALMIR|LEMGRUBER|SANTOS/i.test(blocoPix + janelaPix), 'bloco do Pix e janela do Pix nao imprimem nome de pessoa');
