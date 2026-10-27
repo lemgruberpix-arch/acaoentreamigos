@@ -275,7 +275,7 @@ function conferirMesmoTexto(g, texto, rotulo) {
     await reservar(env, [3], 'Joao', '22 98888-7777');
     ok(env.els.successModal.getAttribute('aria-hidden') === 'false', 'biblioteca ' + modo + ': a janela do Pix abre mesmo assim');
     ok(env.els.pixQrCode.hidden === true && env.els.pixQrFallback.hidden === false, 'biblioteca ' + modo + ': janela mostra so o aviso no lugar do QR');
-    ok(/^000201/.test(env.els.pixCopyPaste.value) && /20\.00/.test(env.els.pixCopyPaste.value), 'biblioteca ' + modo + ': copia e cola com valor continua na tela');
+    ok(/^000201/.test(env.els.pixCopyPaste.value) && /18\.90/.test(env.els.pixCopyPaste.value), 'biblioteca ' + modo + ': copia e cola com valor continua na tela');
     ok(/id="pixQrFallback"[^>]*>[^<]*copia e cola/i.test(html) && /id="pixHomeQrFallback"[^>]*>[^<]*código Pix/i.test(html), 'biblioteca ' + modo + ': avisos (texto fixo no HTML) mandam usar o copia e cola');
   }
 

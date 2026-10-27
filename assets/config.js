@@ -19,10 +19,10 @@ window.RIFA_CONFIG = {
   PIX_RECEBEDOR: "ACAO ENTRE AMIGOS",
   PIX_CIDADE: "CARMO",
 
-  VALOR_NUMERO: 20,
+  VALOR_NUMERO: 18.9,
   // Pacotes aplicados automaticamente pela quantidade total selecionada.
   PROMOCOES_COTAS: [
-    { quantidade: 10, valor: 170 },
+    { quantidade: 10, valor: 165 },
     { quantidade: 6, valor: 100 },
     { quantidade: 3, valor: 50 }
   ],

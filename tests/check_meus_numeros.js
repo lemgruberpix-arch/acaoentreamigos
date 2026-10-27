@@ -215,7 +215,7 @@ function linhas(canvas) { return nb(canvas.__ctx.texts.join(' | ')); }
     ok(/data-act="receipt"[^>]*>Gerar recibo</.test(r1), 'R1: botao "Gerar recibo" aparece (todas pagas)');
 
     const r2 = achar(env, '0100'); const t2 = texto(r2);
-    ok(t2.includes('Aguardando a confirmação do Pix') && /reservada/.test(t2) && t2.includes('1 cota') && t2.includes('R$ 20,00'), 'R2: aguardando a confirmacao do Pix, cota reservada, R$ 20,00');
+    ok(t2.includes('Aguardando a confirmação do Pix') && /reservada/.test(t2) && t2.includes('1 cota') && t2.includes('R$ 18,90'), 'R2: aguardando a confirmacao do Pix, cota reservada, R$ 18,90');
     ok(!/Gerar recibo|Pagamento confirmado|Reserva liberada/.test(r2), 'R2: sem recibo e sem "confirmado/liberada"');
     ok(/data-act="pay"/.test(r2), 'R2: oferece "Ver Pix para pagar"');
 
@@ -293,7 +293,7 @@ function linhas(canvas) { return nb(canvas.__ctx.texts.join(' | ')); }
     await env.els.meusRefreshBtn.listeners.click[0](); await settle();
     await clicar(env, botaoDoArtigo(env, achar(env, '0100'), 'pay'));
     ok(env.els.meusModal.getAttribute('aria-hidden') === 'true' && env.els.successModal.getAttribute('aria-hidden') === 'false', '"Ver Pix para pagar" fecha o painel e abre a janela do Pix');
-    ok(env.els.modalNumbers.textContent === '0100' && /20/.test(env.els.pixCopyPaste.value) && /5406?20\.00|5405?20\.00/.test(env.els.pixCopyPaste.value), 'janela do Pix com a cota 0100 e o valor R$ 20,00');
+    ok(env.els.modalNumbers.textContent === '0100' && /18/.test(env.els.pixCopyPaste.value) && /540518\.90/.test(env.els.pixCopyPaste.value), 'janela do Pix com a cota 0100 e o valor R$ 18,90');
     ok(env.erros.length === 0, 'nenhuma excecao solta');
   }
 
@@ -308,7 +308,7 @@ function linhas(canvas) { return nb(canvas.__ctx.texts.join(' | ')); }
     await clicar(env, botaoDoArtigo(env, art, 'share'));
     ok(env.compartilhado.length === 1 && env.compartilhado[0].files && env.compartilhado[0].files.length === 1 && /Recibo de participação/.test(env.compartilhado[0].title), 'compartilhar chama navigator.share com o PNG');
     const L = linhas(recibosDesenhados(env)[0]);
-    ok(L.includes('22 9****-1234') && L.includes('R$ 20,00') && L.includes('0005'), 'recibo compartilhado: WhatsApp mascarado, valor e numero certos');
+    ok(L.includes('22 9****-1234') && L.includes('R$ 18,90') && L.includes('0005'), 'recibo compartilhado: WhatsApp mascarado, valor e numero certos');
   }
 
   // ---------- 5) Mascara do WhatsApp em varios formatos ----------

@@ -5,7 +5,7 @@
  *
  * Características principais:
  * - 10.000 cotas: NUMERO_INICIAL = 0, QUANTIDADE_NUMEROS = 10000 (0000 a 9999).
- * - VALOR_POR_NUMERO = 20 (R$ 20,00).
+ * - VALOR_POR_NUMERO = 18,90 (R$ 18,90).
  * - Suporte a armazenamento esparso (números não registrados são 'livre' por padrão).
  * - Inicialização em lotes (batch chunks de 1.000 linhas) para evitar timeout.
  * - Concorrência segura via LockService (waitLock até 30s).
@@ -20,13 +20,13 @@ const START_NUMERO = NUMERO_INICIAL;
 const TOTAL_NUMEROS = QUANTIDADE_NUMEROS;
 const MAX_NUMERO = START_NUMERO + TOTAL_NUMEROS - 1; // 9999
 const PANEL_SIZE = 100;
-const VALOR_POR_NUMERO = 20;
+const VALOR_POR_NUMERO = 18.9;
 const DEFAULT_VALOR_NUMERO = VALOR_POR_NUMERO;
 const COMPROVANTES_FOLDER_NAME = 'Comprovantes - Rifa Honda XRE 190';
 const BATCH_SIZE = 1000;
 
 // Pacotes promocionais canônicos (quantidade, valor em centavos). Devem espelhar PROMOCOES_COTAS em assets/config.js.
-const PACOTES_CENTAVOS = [[10, 17000], [6, 10000], [3, 5000]];
+const PACOTES_CENTAVOS = [[10, 16500], [6, 10000], [3, 5000]];
 const MAX_COTAS_POR_RESERVA = 200;
 const MAX_COMPROVANTE_BYTES = 5 * 1024 * 1024;
 const MIMES_COMPROVANTE = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
@@ -620,12 +620,12 @@ function reservarNumeros_(payload) {
   }
 }
 
-/** Regras canônicas de pacotes (PACOTES_CENTAVOS): 10 por 170, 6 por 100, 3 por 50; sobra vale R$20. Cobra sempre o MENOR preço possível (ex.: 12 cotas = 6+6 = R$ 200, não 10+2 avulsas = R$ 210). */
+/** Regras canônicas de pacotes (PACOTES_CENTAVOS): 10 por 165, 6 por 100, 3 por 50; sobra vale R$ 18,90. Cobra sempre o MENOR preço possível (ex.: 12 cotas = 6+6 = R$ 200, não 10+2 avulsas = R$ 210). */
 function calcularPrecoPromocional_(quantidade) {
   const qtd = Number(quantidade);
   if (!Number.isInteger(qtd) || qtd < 1) throw new Error('Quantidade de cotas inválida.');
 
-  const unitCentavos = VALOR_POR_NUMERO * 100;
+  const unitCentavos = Math.round(VALOR_POR_NUMERO * 100);
   const melhor = [0];
   for (let n = 1; n <= qtd; n++) {
     let custo = melhor[n - 1] + unitCentavos;
@@ -635,9 +635,9 @@ function calcularPrecoPromocional_(quantidade) {
     melhor[n] = custo;
   }
 
-  const base = qtd * VALOR_POR_NUMERO;
+  const base = (qtd * unitCentavos) / 100;
   const total = melhor[qtd] / 100;
-  return { base: base, desconto: base - total, total: total };
+  return { base: base, desconto: Math.round((base - total) * 100) / 100, total: total };
 }
 
 function validarTotalInformado_(informado, esperado) {

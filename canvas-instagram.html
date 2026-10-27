@@ -336,11 +336,11 @@
       </div>
       <div class="field">
         <label for="inpPrice">Preço Individual</label>
-        <input id="inpPrice" type="text" value="APENAS R$ 20,00" />
+        <input id="inpPrice" type="text" value="APENAS R$ 18,90" />
       </div>
       <div class="field">
         <label for="inpCombos">Combos Promocionais</label>
-        <input id="inpCombos" type="text" value="3 por R$ 50 • 6 por R$ 100 • 10 por R$ 170" />
+        <input id="inpCombos" type="text" value="3 por R$ 50 • 6 por R$ 100 • 10 por R$ 165" />
       </div>
       <div class="field">
         <label for="inpDraw">Data do Sorteio</label>
@@ -381,7 +381,7 @@
             <h3>📱 Stories &amp; Reels</h3>
             <ul>
               <li><strong>Resolução:</strong> 1080 × 1920 px (Proporção 9:16).</li>
-              <li><strong>Combos Visuais:</strong> 3 por R$ 50 | 6 por R$ 100 | 10 por R$ 170.</li>
+              <li><strong>Combos Visuais:</strong> 3 por R$ 50 | 6 por R$ 100 | 10 por R$ 165.</li>
               <li><strong>Figurinha de Link:</strong> Espaço livre no rodapé para colar a figurinha de link do Instagram.</li>
             </ul>
           </div>
@@ -408,7 +408,7 @@
             <ul>
               <li><strong>Resolução:</strong> 1080 × 1350 px (Retrato 4:5 recomendado pelo Instagram).</li>
               <li><strong>Ideal para:</strong> Grade do Instagram, Grupos de WhatsApp e Facebook.</li>
-              <li><strong>Destaque dos Combos:</strong> 1 cota R$ 20 • 3 cotas R$ 50 • 6 cotas R$ 100 • 10 cotas R$ 170.</li>
+              <li><strong>Destaque dos Combos:</strong> 1 cota R$ 18,90 • 3 cotas R$ 50 • 6 cotas R$ 100 • 10 cotas R$ 165.</li>
             </ul>
           </div>
         </aside>
@@ -468,13 +468,13 @@
         <h3>📝 Legenda Pronta com Combos (Instagram &amp; WhatsApp)</h3>
         <textarea id="txtCaption" readonly>🏍️ AÇÃO ENTRE AMIGOS — HONDA XRE 190 2018 + CAPACETE
 
-Participe a partir de R$ 20 por cota. Escolha seus números, pague por Pix e envie o comprovante para confirmação.
+Participe a partir de R$ 18,90 por cota. Escolha seus números, pague por Pix e envie o comprovante para confirmação.
 
 🎟️ COMBOS PROMOCIONAIS COM DESCONTO:
-• 1 Cota = R$ 20,00
-• 3 Cotas = R$ 50,00 (Economize R$ 10!)
-• 6 Cotas = R$ 100,00 (Economize R$ 20!)
-• 10 Cotas = R$ 170,00 (Economize R$ 30!)
+• 1 Cota = R$ 18,90
+• 3 Cotas = R$ 50,00 (Economize R$ 6,70!)
+• 6 Cotas = R$ 100,00 (Economize R$ 13,40!)
+• 10 Cotas = R$ 165,00 (Economize R$ 24!)
 
 ✅ Numeração: 0000 a 9999 (Escolha seu número ou use a Surpresinha +1, +5, +10!)
 ✅ Sorteio: 31/12 pela Loteria Federal*
@@ -608,7 +608,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       const W = 1080, H = 1920;
 
       const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
-      const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
+      const price = document.getElementById("inpPrice").value || "APENAS R$ 18,90";
       const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL*";
       const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
       const pix = document.getElementById("inpPix").value || "Pix no site oficial";
@@ -682,7 +682,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#ffffff";
       ctx.font = "800 30px Inter, sans-serif";
-      ctx.fillText("3 Cotas: R$ 50   |   6 Cotas: R$ 100   |   10 Cotas: R$ 170", W / 2, 1150);
+      ctx.fillText("3 Cotas: R$ 50   |   6 Cotas: R$ 100   |   10 Cotas: R$ 165", W / 2, 1150);
 
       // Sorteio
       ctx.fillStyle = "#0f172a";
@@ -748,7 +748,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       const W = 1080, H = 1080;
 
       const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
-      const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
+      const price = document.getElementById("inpPrice").value || "APENAS R$ 18,90";
       const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
       const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
       const pix = document.getElementById("inpPix").value || "Pix no site oficial";
@@ -797,7 +797,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#fbbf24";
       ctx.font = "900 25px Inter, sans-serif";
-      ctx.fillText("COMBOS: 3 por R$ 50   •   6 por R$ 100   •   10 por R$ 170", W / 2, 725);
+      ctx.fillText("COMBOS: 3 por R$ 50   •   6 por R$ 100   •   10 por R$ 165", W / 2, 725);
 
       ctx.fillStyle = "#ffffff";
       ctx.font = "700 24px Inter, sans-serif";
@@ -838,7 +838,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       const W = 2480, H = 3508;
 
       const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
-      const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
+      const price = document.getElementById("inpPrice").value || "APENAS R$ 18,90";
       const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
       const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
       const pix = document.getElementById("inpPix").value || "Pix no site oficial";
@@ -908,7 +908,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#1f2937";
       ctx.font = "800 62px Inter, sans-serif";
-      ctx.fillText("3 Cotas: R$ 50   |   6 Cotas: R$ 100   |   10 Cotas: R$ 170", W / 2, 2250);
+      ctx.fillText("3 Cotas: R$ 50   |   6 Cotas: R$ 100   |   10 Cotas: R$ 165", W / 2, 2250);
 
       // Data e YouTube
       ctx.fillStyle = "#111827";
@@ -1045,7 +1045,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#ffffff";
       ctx.font = "900 56px Inter, sans-serif";
-      ctx.fillText("APENAS R$ 20,00 A COTA", W / 2, 1200);
+      ctx.fillText("APENAS R$ 18,90 A COTA", W / 2, 1200);
 
       // Combos
       ctx.fillStyle = "#1e293b";
@@ -1058,7 +1058,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
 
       ctx.fillStyle = "#fbbf24";
       ctx.font = "900 28px Inter, sans-serif";
-      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 1345);
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 165", W / 2, 1345);
 
       // Ao Vivo
       ctx.fillStyle = "#0f172a";
@@ -1186,7 +1186,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       const ctx = c.getContext("2d");
       const W = 1080, H = 1920;
       const title = document.getElementById("inpTitle").value || "HONDA XRE 190 2018";
-      const price = document.getElementById("inpPrice").value || "APENAS R$ 20,00";
+      const price = document.getElementById("inpPrice").value || "APENAS R$ 18,90";
       const draw = document.getElementById("inpDraw").value || "SORTEIO 31/12 • LOTERIA FEDERAL";
       const phone = document.getElementById("inpPhone").value || "(22) 99283-9362";
 
@@ -1227,7 +1227,7 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       ctx.font = "900 27px Arial";
       ctx.fillText("COMBOS", W / 2, 1305);
       ctx.font = "800 29px Arial";
-      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 1360);
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 165", W / 2, 1360);
 
       ctx.fillStyle = "#172033";
       ctx.font = "900 31px Arial";
@@ -1289,10 +1289,10 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       lightCard(ctx, 70, 774, 940, 112, 28, "#c8222a");
       ctx.fillStyle = "#ffffff";
       ctx.font = "900 46px Arial";
-      ctx.fillText("R$ 20 A COTA", W / 2, 846);
+      ctx.fillText("R$ 18,90 A COTA", W / 2, 846);
       ctx.fillStyle = "#172033";
       ctx.font = "800 26px Arial";
-      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 938);
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 165", W / 2, 938);
       ctx.font = "900 27px Arial";
       ctx.fillText("SORTEIO 31/12 • LOTERIA FEDERAL*", W / 2, 982);
       ctx.fillStyle = "#657080";
@@ -1355,11 +1355,11 @@ Impulsione como "Ação Entre Amigos • Projeto Honda XRE 190 em Carmo-RJ" para
       ctx.textAlign = "center";
       ctx.fillStyle = "#ffffff";
       ctx.font = "900 112px Arial";
-      ctx.fillText("R$ 20 A COTA", W / 2, 2215);
+      ctx.fillText("R$ 18,90 A COTA", W / 2, 2215);
 
       ctx.fillStyle = "#172033";
       ctx.font = "900 61px Arial";
-      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 170", W / 2, 2445);
+      ctx.fillText("3 por R$ 50  •  6 por R$ 100  •  10 por R$ 165", W / 2, 2445);
       ctx.font = "900 70px Arial";
       ctx.fillText("SORTEIO 31/12 • LOTERIA FEDERAL*", W / 2, 2560);
       ctx.fillStyle = "#657080";

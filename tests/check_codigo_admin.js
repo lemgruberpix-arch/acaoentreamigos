@@ -71,7 +71,7 @@ function ok(condition, message) { assert(condition, message); checks += 1; }
   ok(ana.nome === 'Ana' && ana.whatsapp === '21999999999' && ana.valor === 20, 'listarAdmin traz nome, whatsapp e valor');
   const bia = list.reservas.find((r) => r.numero === 3);
   ok(bia.comprovante_url === 'https://drive.example/c' && bia.status === 'pago', 'listarAdmin traz comprovante e status');
-  ok(list.total_numeros === 10000 && list.valor_numero === 20, 'listarAdmin informa total e valor da cota');
+  ok(list.total_numeros === 10000 && list.valor_numero === 18.9, 'listarAdmin informa total e valor da cota');
 
   const viaGet = api.get({ action: 'listarAdmin' });
   ok(viaGet.ok === false && /POST/.test(viaGet.error), 'listarAdmin via GET (URL) deve ser recusado');

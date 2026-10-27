@@ -698,7 +698,7 @@
       const price = btn.querySelector(".combo-price");
       const note = btn.querySelector(".combo-note");
       if (price) price.textContent = formatCurrency(pricing.total);
-      if (note) note.textContent = pricing.discount > 0 ? `Economia de ${formatCurrency(pricing.discount).replace(",00", "")}` : "Preço normal";
+      if (note) note.textContent = pricing.discount > 0 ? `Economia de ${formatCurrency(pricing.discount)}` : "Preço normal";
       btn.setAttribute("aria-label", `Adicionar ${qty} ${qty === 1 ? "cota" : "cotas"} por ${formatCurrency(pricing.total)}${pricing.discount > 0 ? `, economia de ${formatCurrency(pricing.discount)}` : ""}`);
     });
   }
@@ -1071,9 +1071,9 @@
       });
       best[n] = cost;
     }
-    const base = qty * baseUnit;
+    const base = (qty * unitCents) / 100;
     const total = (best[qty] || 0) / 100;
-    return { base, total, discount: Math.max(0, base - total) };
+    return { base, total, discount: Math.max(0, Math.round((base - total) * 100) / 100) };
   }
 
   function setLoading(isLoading) {
@@ -1162,7 +1162,7 @@
 
   function shareRaffle() {
     const message = [
-      "🏍️ Rifa Honda XRE 190 2018 — concorra por R$ 20,00!",
+      "🏍️ Rifa Honda XRE 190 2018 — concorra por R$ 18,90!",
       "",
       "Escolha sua cota de 0000 a 9999 e concorra pela Loteria Federal (31/12).",
       "",
@@ -1201,7 +1201,7 @@
   }
 
   function getValuePerNumber() {
-    return Number(CFG.VALOR_NUMERO || 20);
+    return Number(CFG.VALOR_NUMERO || 18.9);
   }
 
   // ---------- Resultado do sorteio ----------

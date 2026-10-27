@@ -67,7 +67,7 @@ for (let n = 1; n <= 200; n += 1) {
 }
 
 // casos que o calculo antigo cobrava a mais
-[[12, 200], [15, 250], [18, 300], [1, 20], [3, 50], [6, 100], [10, 170], [20, 340]].forEach(([n, v]) => {
+[[12, 200], [15, 250], [18, 300], [1, 18.9], [2, 37.8], [3, 50], [6, 100], [10, 165], [20, 330]].forEach(([n, v]) => {
   ok(servidor(n) === v, 'servidor: ' + n + ' cotas = R$ ' + v);
   ok(cliente(n) === v, 'site: ' + n + ' cotas = R$ ' + v);
 });

@@ -21,7 +21,7 @@ for (const name of files) {
   ok(/assets\/(xre190-hero\.jpg|motocross\.jpg|motocross-hero\.png)/.test(html), name + ': mostra a moto');
   ok(/3 (?:por|Cotas:?) R\$ 50/.test(html), name + ': combo de 3 correto');
   ok(/6 (?:por|Cotas:?) R\$ 100/.test(html), name + ': combo de 6 correto');
-  ok(/10 (?:por|Cotas:?) R\$ 170/.test(html), name + ': combo de 10 correto');
+  ok(/10 (?:por|Cotas:?) R\$ 165/.test(html), name + ': combo de 10 correto');
   ok(!/3 (?:por|Cotas:?) R\$ 55|5 (?:por|Cotas:?) R\$ 90/.test(html), name + ': combos antigos removidos');
 
   const scripts = [];
