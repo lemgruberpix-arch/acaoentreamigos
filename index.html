@@ -1,35 +1,35 @@
-<!DOCTYPE html>
-
-<html lang="pt-BR">
-
-<head>
-
-  <meta charset="UTF-8" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-
-  <meta name="format-detection" content="telephone=no" />
-
-  <meta name="HandheldFriendly" content="true" />
-
-  <meta name="MobileOptimized" content="width" />
-
-  <title>Rifa Honda XRE 190 2018 | Ação Entre Amigos</title>
-
-  <meta name="description" content="Concorra a uma Honda XRE 190 2018 + capacete, ou R$ 20 mil no Pix à escolha do ganhador, pela Loteria Federal (31/12). Cotas de R$ 20,00 (0000 a 9999) com Pix rápido. Escolha seu número e reserve pelo Pix." />
-
-  <meta name="theme-color" content="#f6f4f0" />
-
-  <link rel="preload" as="image" href="assets/xre190-hero.jpg" fetchpriority="high" />
-
-  <link rel="stylesheet" href="assets/style.css?v=qr1" />
-
-</head>
-
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <meta name="format-detection" content="telephone=no" />
+
+  <meta name="HandheldFriendly" content="true" />
+
+  <meta name="MobileOptimized" content="width" />
+
+  <title>Rifa Honda XRE 190 2018 | Ação Entre Amigos</title>
+
+  <meta name="description" content="Concorra a uma Honda XRE 190 2018 + capacete, ou R$ 20 mil no Pix à escolha do ganhador, pela Loteria Federal (31/12). Cotas de R$ 18,90 (0000 a 9999) com Pix rápido. Escolha seu número e reserve pelo Pix." />
+
+  <meta name="theme-color" content="#f6f4f0" />
+
+  <link rel="preload" as="image" href="assets/xre190-hero.jpg" fetchpriority="high" />
+
+  <link rel="stylesheet" href="assets/style.css?v=qr1" />
+
+</head>
+
 <body class="public-body">
   <div class="mobile-app-shell">
     <div class="topbar">
@@ -39,7 +39,7 @@
         <button type="button" id="toggleSoundBtn" class="sound-toggle-btn" aria-label="Ligar ou desligar som da moto">🔊 Som</button>
       </div>
     </div>
-    <audio id="engineAudio" preload="auto" src="assets/motorcycle-rev.mp3" aria-hidden="true"></audio>    <!-- Reserva pendente: aparece so se este aparelho tem cotas reservadas esperando confirmacao -->
+    <audio id="engineAudio" preload="auto" src="assets/motorcycle-rev.mp3" aria-hidden="true"></audio>    <!-- Reserva pendente: aparece so se este aparelho tem cotas reservadas esperando confirmacao -->
     <section class="soft-card pending-card" id="pendingReservation" aria-label="Reserva aguardando pagamento" hidden>
       <div>
         <strong>Você tem cotas reservadas</strong>
@@ -411,120 +411,120 @@
     </div>
   </div>
 
-<!-- Fallback de Configuração Pública Sanitizada -->
-
-  <script>
-
-    window.RIFA_CONFIG = window.RIFA_CONFIG || {
-
-      NOME_RIFA: "Ação Entre Amigos — Rifa Honda XRE 190 2018",
-
-      TITULO_CURTO: "Rifa Honda XRE 190",
-
-      SUBTITULO: "Ação Entre Amigos",
-
-      RESPONSAVEL_NOME: "Welington Santos",
-
-      WHATSAPP_RESPONSAVEL: "5522992839362",
-
-      DATA_SORTEIO: "31/12 (Loteria Federal)",
-
-      PREMIO_RIFA: "Honda XRE 190 2018 + capacete, ou R$ 20 mil no Pix (escolha do ganhador)",
-
-      PIX_KEY: "db150d56-cbb9-4cd5-849c-6b6790ff4495",
-
-      PIX_RECEBEDOR: "ACAO ENTRE AMIGOS",
-
-      PIX_CIDADE: "CARMO",
-
-      VALOR_NUMERO: 20,
-
-      QUANTIDADE_NUMEROS: 10000,
-
-      NUMERO_INICIAL: 0,
-
-      TAMANHO_PAINEL: 100,
-
-      AUTO_CONFIRMAR_COM_COMPROVANTE: false,
-
-      API_URL: "https://script.google.com/macros/s/AKfycbyp5H5l3waaZIerwBnYf7rXEHK0fhU6nVlTTDJLQ9LHQRrJmcPPNkBf4bVDA5h-f5IN/exec"
-
-    };
-
-  </script>
-
-  <script src="assets/config.js"></script>
-
-  <script src="assets/qrcode-generator.js?v=1.4.4"></script>
-
-  <script src="assets/app.js?v=qr1"></script>
-
-  <script>
-
-    (function initSound() {
-      const audio = document.getElementById('engineAudio');
-      const btn = document.getElementById('toggleSoundBtn');
-      if (!audio || !btn) return;
-      let soundEnabled = true;
-
-      window.playMotoSound = function() {
-        if (!soundEnabled) return;
-        try {
-          audio.currentTime = 0;
-          audio.play().catch(function() {});
-        } catch (e) {}
-      };
-
-      // Mute / Unmute toggle button
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        soundEnabled = !soundEnabled;
-        if (soundEnabled) {
-          btn.textContent = '🔊 Som';
-          window.playMotoSound();
-        } else {
-          btn.textContent = '🔇 Mudo';
-          audio.pause();
-          audio.currentTime = 0;
-        }
-      });
-
-      function hasSelectedNumbers() {
-        const bottom = document.getElementById('bottomSummary');
-        if (bottom && bottom.classList.contains('has-selection')) return true;
-        return document.querySelectorAll('.number-button.selected').length > 0;
-      }
-
-      // Trigger sound ONLY on red Comprar click when numbers are selected (Almir #765 / #780 / #792)
-      function attachBuyTriggers() {
-        const goToFormBtn = document.getElementById('goToFormBtn');
-        if (goToFormBtn) {
-          goToFormBtn.addEventListener('click', function() {
-            if (hasSelectedNumbers()) {
-              window.playMotoSound();
-            }
-          });
-        }
-        const reserveBtn = document.getElementById('reserveBtn');
-        if (reserveBtn) {
-          reserveBtn.addEventListener('click', function() {
-            if (hasSelectedNumbers()) {
-              window.playMotoSound();
-            }
-          });
-        }
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', attachBuyTriggers);
-      } else {
-        attachBuyTriggers();
-      }
-    })();
-
-  </script>
-
-</body>
-
-</html>
-
+<!-- Fallback de Configuração Pública Sanitizada -->
+
+  <script>
+
+    window.RIFA_CONFIG = window.RIFA_CONFIG || {
+
+      NOME_RIFA: "Ação Entre Amigos — Rifa Honda XRE 190 2018",
+
+      TITULO_CURTO: "Rifa Honda XRE 190",
+
+      SUBTITULO: "Ação Entre Amigos",
+
+      RESPONSAVEL_NOME: "Welington Santos",
+
+      WHATSAPP_RESPONSAVEL: "5522992839362",
+
+      DATA_SORTEIO: "31/12 (Loteria Federal)",
+
+      PREMIO_RIFA: "Honda XRE 190 2018 + capacete, ou R$ 20 mil no Pix (escolha do ganhador)",
+
+      PIX_KEY: "db150d56-cbb9-4cd5-849c-6b6790ff4495",
+
+      PIX_RECEBEDOR: "ACAO ENTRE AMIGOS",
+
+      PIX_CIDADE: "CARMO",
+
+      VALOR_NUMERO: 20,
+
+      QUANTIDADE_NUMEROS: 10000,
+
+      NUMERO_INICIAL: 0,
+
+      TAMANHO_PAINEL: 100,
+
+      AUTO_CONFIRMAR_COM_COMPROVANTE: false,
+
+      API_URL: "https://script.google.com/macros/s/AKfycbyp5H5l3waaZIerwBnYf7rXEHK0fhU6nVlTTDJLQ9LHQRrJmcPPNkBf4bVDA5h-f5IN/exec"
+
+    };
+
+  </script>
+
+  <script src="assets/config.js"></script>
+
+  <script src="assets/qrcode-generator.js?v=1.4.4"></script>
+
+  <script src="assets/app.js?v=qr1"></script>
+
+  <script>
+
+    (function initSound() {
+      const audio = document.getElementById('engineAudio');
+      const btn = document.getElementById('toggleSoundBtn');
+      if (!audio || !btn) return;
+      let soundEnabled = true;
+
+      window.playMotoSound = function() {
+        if (!soundEnabled) return;
+        try {
+          audio.currentTime = 0;
+          audio.play().catch(function() {});
+        } catch (e) {}
+      };
+
+      // Mute / Unmute toggle button
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        soundEnabled = !soundEnabled;
+        if (soundEnabled) {
+          btn.textContent = '🔊 Som';
+          window.playMotoSound();
+        } else {
+          btn.textContent = '🔇 Mudo';
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
+
+      function hasSelectedNumbers() {
+        const bottom = document.getElementById('bottomSummary');
+        if (bottom && bottom.classList.contains('has-selection')) return true;
+        return document.querySelectorAll('.number-button.selected').length > 0;
+      }
+
+      // Trigger sound ONLY on red Comprar click when numbers are selected (Almir #765 / #780 / #792)
+      function attachBuyTriggers() {
+        const goToFormBtn = document.getElementById('goToFormBtn');
+        if (goToFormBtn) {
+          goToFormBtn.addEventListener('click', function() {
+            if (hasSelectedNumbers()) {
+              window.playMotoSound();
+            }
+          });
+        }
+        const reserveBtn = document.getElementById('reserveBtn');
+        if (reserveBtn) {
+          reserveBtn.addEventListener('click', function() {
+            if (hasSelectedNumbers()) {
+              window.playMotoSound();
+            }
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attachBuyTriggers);
+      } else {
+        attachBuyTriggers();
+      }
+    })();
+
+  </script>
+
+</body>
+
+</html>
+

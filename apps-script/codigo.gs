@@ -1,7 +1,7 @@
 /******************************************************
  * Rifa Honda XRE 190 2018 — Ação entre Amigos
  * Google Apps Script Backend (Google Sheets + Drive).
- * Escala: 10.000 cotas (0000 a 9999), R$ 20,00 por cota.
+ * Escala: 10.000 cotas (0000 a 9999), R$ 18,90 por cota.
  *
  * Características principais:
  * - 10.000 cotas: NUMERO_INICIAL = 0, QUANTIDADE_NUMEROS = 10000 (0000 a 9999).
@@ -1145,11 +1145,14 @@ function sanitizeIndicador_(value) {
   let text = String(value === undefined || value === null ? '' : value).toLowerCase().trim();
   if (text.normalize) text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   text = text.replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, '').slice(0, 24);
-  return text.length >= 2 ? text : '';
+  if (text.length < 2) return '';
+  // nomes reservados do JavaScript nunca viram codigo de vendedor (evita poluir objetos)
+  if (['__proto__', 'prototype', 'constructor', 'tostring', 'valueof', 'hasownproperty'].indexOf(text) !== -1) return '';
+  return text;
 }
 
 function contarVendedores_(rows) {
-  const porCodigo = {};
+  const porCodigo = Object.create(null);
   rows.forEach(function (item) {
     const data = item.data;
     const codigo = sanitizeIndicador_(data.indicador);
