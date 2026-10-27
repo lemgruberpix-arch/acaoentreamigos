@@ -35,6 +35,11 @@ window.RIFA_CONFIG = {
   YOUTUBE_AVISO: "Sorteio transmitido ao vivo pelo canal do YouTube direto no aplicativo! O ganhador será avisado na hora e todos os participantes serão informados.",
   YOUTUBE_CANAL_URL: "https://www.youtube.com/",
 
+  // Programa "Indique e ganhe cotas grátis" (vendedor.html). Os mesmos números valem no servidor (apps-script/codigo.gs):
+  // a cada cotasPorBloco cotas PAGAS e confirmadas pelo código do vendedor, ele ganha bonusPorBloco cotas grátis,
+  // entregues pelo organizador durante as vendas (não há pagamento em dinheiro).
+  INDICACAO: { cotasPorBloco: 100, bonusPorBloco: 5 },
+
   // Segurança: false = comprovante vai para o painel e o responsável confirma após conferir no banco.
   AUTO_CONFIRMAR_COM_COMPROVANTE: false,
 

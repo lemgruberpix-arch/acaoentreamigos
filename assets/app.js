@@ -17,6 +17,37 @@
 
   const USER_RESERVATIONS_STORAGE_KEY = "minhas_cotas_usuario_v1";
 
+  // ---------- Programa de indicação: o link do vendedor traz ?v=codigo (ou ?ref=codigo) ----------
+  // O código fica só neste aparelho e vai junto com a reserva. Nada aparece na tela para quem clicou no link.
+  const INDICADOR_STORAGE_KEY = "acao_indicador";
+  let indicadorAtual = ""; // código válido do vendedor que indicou esta pessoa ("" = ninguém)
+
+  // Igual ao servidor (apps-script/codigo.gs, sanitizeIndicador_): minúsculas, sem acento, espaço vira "-",
+  // só a-z 0-9 _ -, no máximo 24 caracteres, vale com 2 ou mais. Se não servir, volta vazio.
+  function sanitizeIndicador(value) {
+    let text = String(value === undefined || value === null ? "" : value).toLowerCase().trim();
+    if (text.normalize) text = text.normalize("NFD").replace(/[̀-ͯ]/g, "");
+    text = text.replace(/\s+/g, "-").replace(/[^a-z0-9_-]/g, "").slice(0, 24);
+    return text.length >= 2 ? text : "";
+  }
+
+  function capturarIndicador() {
+    let doLink = "";
+    try {
+      const params = new URLSearchParams((window.location && window.location.search) || "");
+      doLink = sanitizeIndicador(params.get("v") || params.get("ref") || "");
+    } catch (err) { /* endereço sem parâmetros legíveis: segue sem indicador novo */ }
+    if (doLink) {
+      indicadorAtual = doLink;
+      try { localStorage.setItem(INDICADOR_STORAGE_KEY, doLink); } catch (err) { /* sem armazenamento: vale só nesta visita */ }
+      return;
+    }
+    try {
+      indicadorAtual = sanitizeIndicador(localStorage.getItem(INDICADOR_STORAGE_KEY) || "");
+    } catch (err) { indicadorAtual = ""; }
+  }
+  capturarIndicador();
+
   function escapeHtml(str) {
     if (!str) return "";
     return String(str)
@@ -750,7 +781,7 @@
       reservingNow = true;
       setLoading(true);
       showMessage("Conferindo se as cotas ainda estão livres...", "info");
-      const response = await apiCall("reservar", {
+      const dadosReserva = {
         numeros,
         nome,
         whatsapp: whatsappDigits,
@@ -759,7 +790,9 @@
         precoBase: pricing.base,
         desconto: pricing.discount,
         valorTotal: pricing.total
-      });
+      };
+      if (indicadorAtual) dadosReserva.indicador = indicadorAtual; // sem código, o campo nem é enviado
+      const response = await apiCall("reservar", dadosReserva);
 
       const finalNumbers = response.numeros || numeros;
       lastReservation = {

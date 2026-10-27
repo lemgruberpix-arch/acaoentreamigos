@@ -48,7 +48,8 @@ const COLS = [
   'comprovante_nome',
   'comprovante_url',
   'data_comprovante',
-  'comprovante_tipo'
+  'comprovante_tipo',
+  'indicador'
 ];
 
 const COL = COLS.reduce(function (acc, name, index) {
@@ -114,6 +115,20 @@ function handleRequest_(e) {
         valor_numero: VALOR_POR_NUMERO,
         reservas: listarReservasAdmin_()
       });
+    }
+
+    if (action === 'vendedor') {
+      return json_(vendedorPublico_(payload.codigo));
+    }
+
+    if (action === 'rankingVendedores') {
+      requireAdmin_(payload);
+      return json_(rankingVendedores_());
+    }
+
+    if (action === 'darBonus') {
+      requireAdmin_(payload);
+      return json_(darBonus_(payload));
     }
 
     if (action === 'confirmarPagamento') {
@@ -417,7 +432,7 @@ function inicializarPlanilha_(prefillAll) {
     const toAppend = [];
     for (let i = START_NUMERO; i <= MAX_NUMERO; i++) {
       if (!existentes[i]) {
-        toAppend.push([i, 'livre', '', '', '', '', '', '', '', '', '', '']);
+        toAppend.push(linhaVazia_(i));
       }
     }
 
@@ -502,7 +517,9 @@ function rowToObject_(row) {
     comprovante_nome: row[COL.comprovante_nome] || '',
     comprovante_url: row[COL.comprovante_url] || '',
     data_comprovante: dateToIso_(row[COL.data_comprovante]),
-    comprovante_tipo: row[COL.comprovante_tipo] || ''
+    comprovante_tipo: row[COL.comprovante_tipo] || '',
+    indicador: row[COL.indicador] || '',
+    bonus: String(row[COL.status] || '').toLowerCase().trim() === 'pago' && row[COL.valor] === 0
   };
 }
 
@@ -531,6 +548,13 @@ function getRowsWithIndex_(sheet) {
     });
   }
   return rows;
+}
+
+/** Linha vazia (cota livre) com a largura certa da planilha. */
+function linhaVazia_(numero) {
+  const linha = [numero, 'livre'];
+  while (linha.length < COLS.length) linha.push('');
+  return linha;
 }
 
 function normalizeRow_(row) {
@@ -564,6 +588,7 @@ function reservarNumeros_(payload) {
 
     const nome = cleanText_(payload.nome, 80);
     const observacao = cleanText_(payload.observacao, 200);
+    const indicador = sanitizeIndicador_(payload.indicador);
     if (nome.length < 2) throw new Error('Nome obrigatório.');
     const whatsapp = normalizeWhatsapp_(payload.whatsapp);
     const preco = calcularPrecoPromocional_(numeros.length);
@@ -594,7 +619,8 @@ function reservarNumeros_(payload) {
         '',
         '',
         '',
-        ''
+        '',
+        indicador
       ];
       if (item) {
         sheet.getRange(item.rowIndex, 1, 1, COLS.length).setValues([newRow]);
@@ -788,12 +814,12 @@ function atualizarStatus_(payload) {
     }
 
     const item = rows.find(function (row) { return Number(row.data.numero) === numero; });
-    const current = item ? normalizeRow_(item.values) : [numero, 'livre', '', '', '', '', '', '', '', '', '', ''];
+    const current = item ? normalizeRow_(item.values) : linhaVazia_(numero);
     const now = new Date();
     let targetRow = null;
 
     if (status === 'livre') {
-      targetRow = [numero, 'livre', '', '', '', '', '', '', '', '', '', ''];
+      targetRow = linhaVazia_(numero);
     } else if (status === 'reservado') {
       targetRow = [
         numero,
@@ -807,7 +833,8 @@ function atualizarStatus_(payload) {
         current[COL.comprovante_nome] || '',
         current[COL.comprovante_url] || '',
         current[COL.data_comprovante] || '',
-        current[COL.comprovante_tipo] || ''
+        current[COL.comprovante_tipo] || '',
+        current[COL.indicador] || ''
       ];
     } else if (status === 'pago') {
       targetRow = [
@@ -822,7 +849,8 @@ function atualizarStatus_(payload) {
         current[COL.comprovante_nome] || '',
         current[COL.comprovante_url] || '',
         current[COL.data_comprovante] || '',
-        current[COL.comprovante_tipo] || ''
+        current[COL.comprovante_tipo] || '',
+        current[COL.indicador] || ''
       ];
     }
 
@@ -1100,4 +1128,131 @@ function json_(obj) {
   return ContentService
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+
+/******************************************************
+ * PROGRAMA DE VENDEDORES (indicação por link)
+ * Qualquer amigo divulga o link com ?v=codigo. A cada 100 cotas PAGAS e confirmadas por esse código, ele ganha
+ * 5 cotas grátis (entregues pelo organizador durante as vendas). Só conta cota paga com valor > 0; as cotas de
+ * bônus (valor 0) não contam para o próprio bônus. A resposta pública traz só contagens, nunca nomes ou telefones.
+ ******************************************************/
+const COTAS_POR_BLOCO = 100;
+const BONUS_POR_BLOCO = 5;
+
+/** Código do vendedor: minúsculas, sem acento, só letras, números, - e _ (2 a 24). Vazio se não servir. */
+function sanitizeIndicador_(value) {
+  let text = String(value === undefined || value === null ? '' : value).toLowerCase().trim();
+  if (text.normalize) text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  text = text.replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, '').slice(0, 24);
+  return text.length >= 2 ? text : '';
+}
+
+function contarVendedores_(rows) {
+  const porCodigo = {};
+  rows.forEach(function (item) {
+    const data = item.data;
+    const codigo = sanitizeIndicador_(data.indicador);
+    if (!codigo || !isValidNumero_(data.numero)) return;
+    const v = porCodigo[codigo] || (porCodigo[codigo] = { codigo: codigo, cotas_pagas: 0, cotas_pendentes: 0, bonus_entregue: 0 });
+    if (data.status === 'pago' && data.bonus) v.bonus_entregue += 1;
+    else if (data.status === 'pago' && data.valor > 0) v.cotas_pagas += 1;
+    else if (data.status === 'reservado') v.cotas_pendentes += 1;
+  });
+  return porCodigo;
+}
+
+function completarVendedor_(v) {
+  const blocos = Math.floor(v.cotas_pagas / COTAS_POR_BLOCO);
+  const ganho = blocos * BONUS_POR_BLOCO;
+  v.blocos_fechados = blocos;
+  v.bonus_ganho = ganho;
+  v.bonus_a_entregar = Math.max(0, ganho - v.bonus_entregue);
+  v.faltam_para_proximo = COTAS_POR_BLOCO - (v.cotas_pagas % COTAS_POR_BLOCO);
+  return v;
+}
+
+/** Consulta pública do vendedor: só contagens. */
+function vendedorPublico_(codigoBruto) {
+  const codigo = sanitizeIndicador_(codigoBruto);
+  if (!codigo) throw new Error('Informe o seu código (2 a 24 letras ou números).');
+  const mapa = contarVendedores_(getRowsWithIndex_(getSheet_()));
+  const v = completarVendedor_(mapa[codigo] || { codigo: codigo, cotas_pagas: 0, cotas_pendentes: 0, bonus_entregue: 0 });
+  return {
+    ok: true,
+    codigo: v.codigo,
+    cotas_pagas: v.cotas_pagas,
+    cotas_pendentes: v.cotas_pendentes,
+    blocos_fechados: v.blocos_fechados,
+    bonus_ganho: v.bonus_ganho,
+    bonus_entregue: v.bonus_entregue,
+    bonus_a_entregar: v.bonus_a_entregar,
+    faltam_para_proximo: v.faltam_para_proximo,
+    cotas_por_bloco: COTAS_POR_BLOCO,
+    bonus_por_bloco: BONUS_POR_BLOCO
+  };
+}
+
+/** Só administrador: lista de vendedores com o que cada um já ganhou e o que falta entregar. */
+function rankingVendedores_() {
+  const mapa = contarVendedores_(getRowsWithIndex_(getSheet_()));
+  const vendedores = Object.keys(mapa).map(function (k) { return completarVendedor_(mapa[k]); })
+    .sort(function (a, b) { return b.cotas_pagas - a.cotas_pagas || (a.codigo < b.codigo ? -1 : 1); });
+  const total = vendedores.reduce(function (acc, v) { return acc + v.cotas_pagas; }, 0);
+  return { ok: true, vendedores: vendedores, total_indicadas: total, cotas_por_bloco: COTAS_POR_BLOCO, bonus_por_bloco: BONUS_POR_BLOCO };
+}
+
+/** Só administrador: entrega cotas de bônus (valor 0, status pago) ao vendedor, até o limite que ele ganhou. */
+function darBonus_(payload) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const sheet = getSheet_();
+    const rows = getRowsWithIndex_(sheet);
+    const codigo = sanitizeIndicador_(payload.codigo);
+    if (!codigo) throw new Error('Informe o código do vendedor.');
+    const nome = cleanText_(payload.nome, 80);
+    if (nome.length < 2) throw new Error('Nome obrigatório.');
+    const whatsapp = normalizeWhatsapp_(payload.whatsapp);
+    const numeros = parseNumeros_(payload.numeros);
+    if (!numeros.length) throw new Error('Nenhum número válido informado (0000 a 9999).');
+
+    const mapa = contarVendedores_(rows);
+    const v = completarVendedor_(mapa[codigo] || { codigo: codigo, cotas_pagas: 0, cotas_pendentes: 0, bonus_entregue: 0 });
+    if (numeros.length > v.bonus_a_entregar) {
+      throw new Error('Esse vendedor tem ' + v.bonus_a_entregar + ' cota(s) de bônus a receber agora.');
+    }
+
+    const byNumber = {};
+    rows.forEach(function (item) {
+      if (isValidNumero_(item.data.numero)) byNumber[Number(item.data.numero)] = item;
+    });
+    numeros.forEach(function (numero) {
+      const item = byNumber[numero];
+      if (item && item.data.status !== 'livre') {
+        throw new Error('A cota ' + formatCode_(numero) + ' não está livre.');
+      }
+    });
+
+    const now = new Date();
+    const novas = [];
+    numeros.forEach(function (numero) {
+      const linha = [numero, 'pago', nome, whatsapp, 0, now, now, 'Bônus de indicação (' + codigo + ')', '', '', '', '', codigo];
+      const item = byNumber[numero];
+      if (item) sheet.getRange(item.rowIndex, 1, 1, COLS.length).setValues([linha]);
+      else novas.push(linha);
+    });
+    if (novas.length) {
+      sheet.getRange(sheet.getLastRow() + 1, 1, novas.length, COLS.length).setValues(novas);
+    }
+    return {
+      ok: true,
+      codigo: codigo,
+      numeros: numeros,
+      bonus_a_entregar_restante: v.bonus_a_entregar - numeros.length,
+      message: 'Bônus entregue.'
+    };
+  } finally {
+    lock.releaseLock();
+  }
 }

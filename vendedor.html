@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f6f4f0">
+  <title>Indique e ganhe cotas grátis | Ação Entre Amigos</title>
+  <meta name="description" content="Crie seu link, divulgue a Ação Entre Amigos e ganhe 5 cotas grátis a cada 100 cotas pagas e confirmadas pelo seu link.">
+  <link rel="stylesheet" href="assets/style.css?v=qr1">
+  <style>
+    /* Página do vendedor: mesma identidade da cartela (fundo branco/off-white, grafite e um vermelho de acento).
+       Todo texto tem 16px ou mais. Sem tema escuro. */
+    .vend-shell { padding-bottom: 40px; }
+    .vend-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 56px; padding: 6px 4px; }
+    .vend-brand { font-weight: 800; font-size: 1rem; letter-spacing: 0.01em; color: var(--ink); }
+    .vend-brand span { color: var(--red); }
+    .vend-voltar { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; font-size: 1rem; font-weight: 700; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; }
+    .vend-card h1 { font-size: 1.6rem; line-height: 1.2; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px; }
+    .vend-card h2 { font-size: 1.25rem; line-height: 1.25; font-weight: 800; margin-bottom: 10px; }
+    .vend-card p, .vend-card li, .vend-card label, .vend-card dt, .vend-card dd { font-size: 1rem; line-height: 1.55; }
+    .vend-lead { color: var(--ink-2); margin-bottom: 12px; }
+    .vend-passos { list-style: none; counter-reset: passo; margin: 0 0 4px; padding: 0; }
+    .vend-passos li { counter-increment: passo; position: relative; padding: 8px 0 8px 46px; min-height: 44px; border-top: 1px solid var(--line); }
+    .vend-passos li:first-child { border-top: 0; }
+    .vend-passos li::before { content: counter(passo); position: absolute; left: 0; top: 8px; width: 34px; height: 34px; border-radius: 50%; background: var(--red); color: #fff; font-weight: 800; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+    .vend-passos strong { display: block; font-size: 1.0625rem; }
+    .vend-field { display: block; margin-bottom: 8px; }
+    .vend-field > span { display: block; font-weight: 700; margin-bottom: 6px; }
+    .vend-input { width: 100%; min-height: 52px; padding: 10px 12px; border: 1.5px solid var(--edge); border-radius: var(--radius-sm); background: #fff; color: var(--ink); font-size: 1rem; }
+    .vend-input[aria-invalid="true"] { border-color: var(--red); box-shadow: 0 0 0 1px var(--red); }
+    .vend-dica { color: var(--muted); min-height: 1.6em; margin-bottom: 12px; overflow-wrap: anywhere; }
+    .vend-erro { color: var(--red-2); font-weight: 700; margin-bottom: 12px; }
+    .vend-acoes { display: grid; gap: 10px; margin-top: 12px; }
+    @media (min-width: 560px) { .vend-acoes { grid-template-columns: 1fr 1fr; } }
+    .vend-codigo { font-family: var(--mono); font-weight: 800; font-size: 1.25rem; overflow-wrap: anywhere; }
+    .vend-aviso { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--red-line); background: var(--red-soft); color: var(--ink); margin-top: 12px; }
+    .vend-ok { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--ok-line); background: var(--ok-soft); color: var(--ok-ink); font-weight: 700; margin-top: 12px; }
+    .vend-barra { height: 20px; border-radius: 999px; background: var(--line); overflow: hidden; margin: 10px 0 8px; }
+    .vend-barra > div { height: 100%; width: 0; background: var(--red); border-radius: 999px; }
+    .vend-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 0; padding: 0; }
+    .vend-grade > div { padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-2); min-width: 0; }
+    .vend-grade dt { color: var(--muted); font-weight: 700; margin: 0; }
+    .vend-grade dd { margin: 4px 0 0; font-size: 1.75rem; line-height: 1.1; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .vend-grade .vend-destaque dd { color: var(--red); }
+    .vend-total { font-size: 1.125rem; font-weight: 800; }
+    .vend-regras li { margin: 6px 0; }
+    .vend-regras { padding-left: 1.2rem; margin: 6px 0 0; }
+    .vend-card a:not(.button):not(.vend-voltar) { color: var(--ink-2); font-weight: 700; }
+    @media (prefers-reduced-motion: no-preference) { .vend-barra > div { transition: width .4s ease; } }
+  </style>
+</head>
+<body class="public-body">
+  <div class="mobile-app-shell vend-shell">
+    <div class="vend-top">
+      <span class="vend-brand">Ação <span>Entre</span> Amigos</span>
+      <a class="vend-voltar" id="voltarCartela" href="./">← Voltar para a cartela</a>
+    </div>
+
+    <main>
+      <section class="soft-card vend-card" aria-labelledby="vendTitulo">
+        <h1 id="vendTitulo">Indique e ganhe cotas grátis</h1>
+        <p class="vend-lead">Qualquer amigo pode ajudar a divulgar a ação com um link só dele. É simples:</p>
+        <ol class="vend-passos">
+          <li><strong>Crie seu link</strong>Digite seu nome ou apelido aqui embaixo.</li>
+          <li><strong>Divulgue</strong>Mande o link para seus amigos, no WhatsApp ou onde preferir.</li>
+          <li><strong>Ganhe <span data-bonus-bloco>5</span> cotas grátis</strong>A cada <span data-cotas-bloco>100</span> cotas pagas e confirmadas pelo seu link.</li>
+        </ol>
+      </section>
+
+      <section class="soft-card vend-card" aria-labelledby="vendCriar">
+        <h2 id="vendCriar">Seu link</h2>
+        <form id="vendForm" novalidate>
+          <label class="vend-field" for="vendNome">
+            <span>Seu nome ou apelido</span>
+            <input class="vend-input" id="vendNome" name="nome" type="text" inputmode="text" autocomplete="off" autocapitalize="none" maxlength="60" placeholder="Ex.: João Silva" aria-describedby="vendDica vendErro">
+          </label>
+          <p class="vend-dica" id="vendDica" aria-live="polite">Seu código vai aparecer aqui.</p>
+          <p class="vend-erro" id="vendErro" role="alert" hidden></p>
+          <button class="button button-main button-full" id="vendGerar" type="submit">Gerar meu link e ver meu progresso</button>
+        </form>
+
+        <div id="linkCard" hidden>
+          <p style="margin-top:18px">Seu código: <span class="vend-codigo" id="codigoTexto"></span></p>
+          <label class="vend-field" for="linkCampo" style="margin-top:10px">
+            <span>Seu link para divulgar</span>
+            <input class="vend-input" id="linkCampo" type="text" readonly value="" aria-describedby="copiaAviso">
+          </label>
+          <div class="vend-acoes">
+            <button class="button button-blue" id="copiarBtn" type="button">Copiar link</button>
+            <a class="button button-whatsapp" id="whatsBtn" href="https://wa.me/" target="_blank" rel="noopener noreferrer">Compartilhar no WhatsApp</a>
+          </div>
+          <p class="vend-ok" id="copiaAviso" role="status" aria-live="polite" hidden></p>
+        </div>
+      </section>
+
+      <section class="soft-card vend-card" id="progressoCard" aria-labelledby="vendProgresso" aria-live="polite" hidden>
+        <h2 id="vendProgresso">Seu progresso</h2>
+        <p id="consultando" hidden>Consultando seus números...</p>
+        <div id="consultaErro" hidden>
+          <p class="vend-aviso" id="consultaErroTexto">Não foi possível consultar agora. Seu link já funciona; tente de novo em instantes.</p>
+          <button class="button button-full" id="tentarDeNovo" type="button" style="margin-top:12px">Tentar de novo</button>
+        </div>
+        <div id="consultaOk" hidden>
+          <p class="vend-aviso" id="codigoUsado" hidden>Esse código já tem vendas: se não é você, escolha outro (ex.: joao-silva).</p>
+          <p class="vend-total" style="margin-top:12px">Cotas pagas e confirmadas: <span id="cotasPagas">0</span></p>
+          <div class="vend-barra" id="barra" role="progressbar" aria-label="Progresso até o próximo bloco" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="barraPreench"></div></div>
+          <p id="barraTexto"><span id="noBloco">0</span> de <span id="blocoTotal">100</span> neste bloco</p>
+          <p id="faltamTexto"></p>
+          <p id="pendentesTexto" hidden></p>
+          <dl class="vend-grade">
+            <div><dt>Bônus ganho</dt><dd id="bonusGanho">0</dd></div>
+            <div><dt>Já entregue</dt><dd id="bonusEntregue">0</dd></div>
+            <div class="vend-destaque"><dt>A receber</dt><dd id="bonusReceber">0</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="soft-card vend-card" aria-labelledby="vendRegras">
+        <h2 id="vendRegras">Como funciona, sem letra miúda</h2>
+        <ul class="vend-regras">
+          <li>Só contam cotas <strong>pagas e confirmadas pelo organizador</strong>. Cota reservada que ainda não foi paga não conta.</li>
+          <li>O bônus é de <span data-bonus-bloco>5</span> cotas grátis a cada <span data-cotas-bloco>100</span> cotas pagas e confirmadas pelo seu código. Ele é <strong>entregue pelo organizador durante as vendas</strong>. Não há pagamento em dinheiro.</li>
+          <li>Esta consulta mostra só números. Nunca aparece nome nem telefone de quem comprou.</li>
+          <li>Quem clicar no seu link vê a cartela normal. O seu código só serve para o organizador contar as vendas.</li>
+          <li>Leia o <a href="regulamento.html">regulamento</a> antes de divulgar.</li>
+        </ul>
+        <a class="button button-full" href="./" style="margin-top:16px">← Voltar para a cartela</a>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/config.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var CFG = window.RIFA_CONFIG || {};
+      var IND = CFG.INDICACAO || {};
+      // Mesmos números do servidor (apps-script/codigo.gs); config.js é o lugar de mudar.
+      var POR_BLOCO = Number(IND.cotasPorBloco) > 0 ? Number(IND.cotasPorBloco) : 100;
+      var BONUS_BLOCO = Number(IND.bonusPorBloco) > 0 ? Number(IND.bonusPorBloco) : 5;
+      var CHAVE = "acao_vendedor_codigo"; // último código deste aparelho (não é o mesmo de "acao_indicador", de quem comprou)
+      var SITE_PUBLICO = "https://acaoentreamigos.pages.dev";
+      var seq = 0; // descarta resposta atrasada de consulta antiga
+
+      function el(id) { return document.getElementById(id); }
+
+      // Igual ao servidor (apps-script/codigo.gs, sanitizeIndicador_): minúsculas, sem acento, espaço vira "-",
+      // só a-z 0-9 _ -, no máximo 24 caracteres, vale com 2 ou mais. Se não servir, volta vazio.
+      function sanitizeIndicador(value) {
+        var text = String(value === undefined || value === null ? "" : value).toLowerCase().trim();
+        if (text.normalize) text = text.normalize("NFD").replace(/[̀-ͯ]/g, "");
+        text = text.replace(/\s+/g, "-").replace(/[^a-z0-9_-]/g, "").slice(0, 24);
+        return text.length >= 2 ? text : "";
+      }
+
+      function lerSalvo() {
+        try { return sanitizeIndicador(localStorage.getItem(CHAVE) || ""); } catch (err) { return ""; }
+      }
+      function guardar(codigo) {
+        try { localStorage.setItem(CHAVE, codigo); } catch (err) { /* sem armazenamento: vale só nesta visita */ }
+      }
+
+      function origem() {
+        var o = "";
+        try { o = String((window.location && window.location.origin) || ""); } catch (err) { o = ""; }
+        return /^https?:\/\//.test(o) ? o : SITE_PUBLICO; // aberto como arquivo: usa o endereço público
+      }
+      function linkDo(codigo) { return origem() + "/?v=" + codigo; }
+
+      function num(v) { var n = Number(v); return isFinite(n) && n >= 0 ? Math.floor(n) : 0; }
+      function mostrar(id, sim) { var e = el(id); if (e) e.hidden = !sim; }
+      function texto(id, t) { var e = el(id); if (e) e.textContent = String(t); }
+
+      function preencherNumerosDoPrograma() {
+        var a = document.querySelectorAll ? document.querySelectorAll("[data-cotas-bloco]") : [];
+        var b = document.querySelectorAll ? document.querySelectorAll("[data-bonus-bloco]") : [];
+        Array.prototype.forEach.call(a, function (e) { e.textContent = String(POR_BLOCO); });
+        Array.prototype.forEach.call(b, function (e) { e.textContent = String(BONUS_BLOCO); });
+        texto("blocoTotal", POR_BLOCO);
+      }
+
+      // ---------- Link, copiar e WhatsApp ----------
+      function mostrarLink(codigo) {
+        var link = linkDo(codigo);
+        texto("codigoTexto", codigo);
+        el("linkCampo").value = link;
+        var msg = "Oi! Dá uma olhada neste app da Ação Entre Amigos (rifa da Honda XRE 190 2018, sorteio pela Loteria Federal): " + link;
+        el("whatsBtn").setAttribute("href", "https://wa.me/?text=" + encodeURIComponent(msg));
+        mostrar("linkCard", true);
+        mostrar("copiaAviso", false);
+      }
+
+      function avisoCopia(t) {
+        texto("copiaAviso", t);
+        mostrar("copiaAviso", true);
+      }
+
+      function copiar() {
+        var campo = el("linkCampo");
+        var link = campo.value;
+        if (!link) return;
+        function copiou() { avisoCopia("Link copiado. Agora é só colar na conversa."); }
+        function planoB() {
+          var feito = false;
+          try {
+            campo.focus();
+            if (campo.select) campo.select();
+            if (campo.setSelectionRange) campo.setSelectionRange(0, link.length);
+            feito = !!(document.execCommand && document.execCommand("copy"));
+          } catch (err) { feito = false; }
+          if (feito) copiou();
+          else avisoCopia("Não consegui copiar sozinho. Toque no link acima, segure e escolha Copiar.");
+        }
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(copiou, planoB);
+          else planoB();
+        } catch (err) { planoB(); }
+      }
+
+      // ---------- Consulta do progresso (só contagens; sem senha) ----------
+      function apiPronta() { return !!CFG.API_URL && String(CFG.API_URL).indexOf("COLE_AQUI") < 0; }
+
+      async function consultar(codigo) {
+        var url = CFG.API_URL + (String(CFG.API_URL).indexOf("?") >= 0 ? "&" : "?") + "action=vendedor&codigo=" + encodeURIComponent(codigo);
+        var resp = await fetch(url, { method: "GET", redirect: "follow" });
+        var bruto = await resp.text();
+        var json;
+        try { json = JSON.parse(bruto); } catch (err) { throw new Error("O servidor não respondeu como esperado."); }
+        if (!json || !json.ok) throw new Error((json && typeof json.error === "string" && json.error) || "A consulta não foi aceita.");
+        return json;
+      }
+
+      function desenhar(d, recemDigitado) {
+        var bloco = num(d.cotas_por_bloco) || POR_BLOCO;
+        var pagas = num(d.cotas_pagas);
+        var pendentes = num(d.cotas_pendentes);
+        var fechados = d.blocos_fechados === undefined ? Math.floor(pagas / bloco) : num(d.blocos_fechados);
+        var resto = Math.max(0, pagas - fechados * bloco);
+        var completo = pagas > 0 && resto === 0; // fechou um bloco agora: barra cheia até a próxima cota paga
+        var noBloco = completo ? bloco : resto;
+        var pct = Math.min(100, Math.round((noBloco / bloco) * 100));
+        var faltam = num(d.faltam_para_proximo) || (bloco - resto);
+
+        texto("cotasPagas", pagas);
+        texto("noBloco", noBloco);
+        texto("blocoTotal", bloco);
+        var barra = el("barra");
+        barra.setAttribute("aria-valuenow", String(pct));
+        el("barraPreench").style.width = pct + "%";
+        texto("faltamTexto", completo
+          ? "Bloco completo! Para o próximo bloco de " + bloco + " faltam " + faltam + " cotas pagas."
+          : "Faltam " + faltam + " " + (faltam === 1 ? "cota paga" : "cotas pagas") + " para o próximo bloco de " + bloco + ".");
+        if (pendentes > 0) {
+          texto("pendentesTexto", pendentes + (pendentes === 1 ? " cota reservada com o seu código está" : " cotas reservadas com o seu código estão") + " esperando o Pix. Só contam quando o organizador confirmar o pagamento.");
+        }
+        mostrar("pendentesTexto", pendentes > 0);
+        texto("bonusGanho", num(d.bonus_ganho));
+        texto("bonusEntregue", num(d.bonus_entregue));
+        texto("bonusReceber", num(d.bonus_a_entregar));
+        // Só avisa quando a pessoa acabou de digitar o código: pode ser o código de outra pessoa.
+        mostrar("codigoUsado", !!recemDigitado && (pagas > 0 || pendentes > 0));
+      }
+
+      async function atualizar(codigo, recemDigitado) {
+        var minha = ++seq;
+        mostrar("progressoCard", true);
+        mostrar("consultaOk", false);
+        mostrar("consultaErro", false);
+        mostrar("consultando", true);
+        try {
+          if (!apiPronta()) throw new Error("A consulta ainda não está ligada.");
+          var dados = await consultar(codigo);
+          if (minha !== seq) return;
+          desenhar(dados, recemDigitado);
+          mostrar("consultando", false);
+          mostrar("consultaOk", true);
+        } catch (err) {
+          if (minha !== seq) return;
+          mostrar("consultando", false);
+          texto("consultaErroTexto", "Não foi possível consultar seus números agora. Seu link já funciona; tente de novo em instantes.");
+          mostrar("consultaErro", true);
+        }
+      }
+
+      // ---------- Formulário ----------
+      var ultimoCodigo = "";
+
+      function atualizarDica() {
+        var c = sanitizeIndicador(el("vendNome").value);
+        var dica = el("vendDica");
+        if (c) {
+          dica.textContent = "Seu código será: " + c;
+        } else {
+          dica.textContent = el("vendNome").value.trim() ? "Use pelo menos 2 letras ou números." : "Seu código vai aparecer aqui.";
+        }
+        el("vendNome").removeAttribute("aria-invalid");
+        mostrar("vendErro", false);
+      }
+
+      function gerar(valor, recemDigitado) {
+        var codigo = sanitizeIndicador(valor);
+        if (!codigo) {
+          el("vendNome").setAttribute("aria-invalid", "true");
+          texto("vendErro", "Digite pelo menos 2 letras ou números para criar o seu código.");
+          mostrar("vendErro", true);
+          if (el("vendNome").focus) el("vendNome").focus();
+          return;
+        }
+        ultimoCodigo = codigo;
+        guardar(codigo);
+        mostrarLink(codigo);
+        atualizar(codigo, recemDigitado);
+      }
+
+      function iniciar() {
+        preencherNumerosDoPrograma();
+        el("vendNome").addEventListener("input", atualizarDica);
+        el("vendForm").addEventListener("submit", function (ev) {
+          if (ev && ev.preventDefault) ev.preventDefault();
+          gerar(el("vendNome").value, true);
+        });
+        el("copiarBtn").addEventListener("click", copiar);
+        el("tentarDeNovo").addEventListener("click", function () { if (ultimoCodigo) atualizar(ultimoCodigo, false); });
+        var salvo = lerSalvo();
+        if (salvo) {
+          el("vendNome").value = salvo;
+          atualizarDica();
+          gerar(salvo, false);
+        }
+      }
+      iniciar();
+    })();
+  </script>
+</body>
+</html>

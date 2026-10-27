@@ -7,7 +7,7 @@ const assert = require('assert');
 
 const SOURCE = fs.readFileSync(process.env.GS_FILE || path.join(__dirname, '..', 'apps-script', 'codigo.gs'), 'utf8');
 const COLS = ['numero', 'status', 'nome', 'whatsapp', 'valor', 'data_reserva', 'data_pagamento',
-  'observacao', 'comprovante_nome', 'comprovante_url', 'data_comprovante', 'comprovante_tipo'];
+  'observacao', 'comprovante_nome', 'comprovante_url', 'data_comprovante', 'comprovante_tipo', 'indicador'];
 const TOKEN = 's3cret'; // valor de teste, so existe neste sandbox
 const DATA = '2026-10-24';
 
